@@ -1,1129 +1,862 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BibTeXPad</title>
-<link rel="icon" type="image/png" href="data:image/png;base64,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">
-<style>
-    /* Dark Theme (Default) */
-    :root {
-        --bg-color: #1e1e1e;
-        --panel-bg: #252526;
-        --text-color: #d4d4d4;
-        --border-color: #3e3e42;
-        --accent: #842A2A;
-        --accent-hover: #943A3A;
-        --accent-rgb: 0, 122, 204; 
-        
-        --key-color: #569cd6;
-        --type-color: #c586c0;
-        --field-color: #9cdcfe;
-        --string-color: #ce9178;
-        --comment-color: #6a9955;
-        --dup-color: #ff8c8c;
-        --dup-bg-color: #2d2d2d;
-    }
+  <meta charset="UTF-8">
+  <title>Multi-File Editor - Full Features (Final)</title>
 
-    /* Light Theme */
-    :root[data-theme="light"] {
-        --bg-color: #ffffff;
-        --panel-bg: #f3f3f3;
-        --text-color: #333333;
-        --border-color: #cccccc;
-        --accent: #942A2A;
-        --accent-hover: #A44A4A;
-        --accent-rgb: 0, 95, 158;
-        
-        --key-color: #0000ff;
-        --type-color: #af00db;
-        --field-color: #001080;
-        --string-color: #a31515;
-        --comment-color: #008000;
-        --dup-color: #d32f2f;
-        --dup-bg-color: #fff1f1;
+  <!-- CodeMirror Core & Themes -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- CodeMirror Addons CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/foldgutter.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/matchesonscrollbar.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/scroll/simplescrollbars.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/lint/lint.min.css">
+
+  <style>
+    :root {
+      --bg-color: #272822; --sidebar-bg: #1e1e1e; --toolbar-bg: #1e1e1e;
+      --text-color: #fff; --border-color: #333; --item-hover: #333;
+    }
+    body.light-theme {
+      --bg-color: #e0e0e0; --sidebar-bg: #f5f5f5; --toolbar-bg: #f9f9f9;
+      --text-color: #333; --border-color: #ccc; --item-hover: #e0e0e0;
     }
 
     body {
-        margin: 0;
-        padding: 0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: var(--bg-color);
-        color: var(--text-color);
-        display: flex;
-        height: 100vh;
-        overflow: hidden;
-        transition: background-color 0.3s, color 0.3s;
+      margin: 0; display: flex; height: 100vh; font-family: 'Segoe UI', Tahoma, sans-serif;
+      background-color: var(--bg-color); color: var(--text-color); overflow: hidden;
+      transition: background-color 0.3s;
     }
 
-    /* Left Panel: Controls */
+    /* Sidebar File Explorer */
     #sidebar {
-        width: 320px;
-        background-color: var(--panel-bg);
-        border-right: 1px solid var(--border-color);
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        overflow-y: auto;
-        flex-shrink: 0;
-        transition: background-color 0.3s, border-color 0.3s;
+      width: 250px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color);
+      display: flex; flex-direction: column; flex-shrink: 0; z-index: 100;
     }
-    
-    .sidebar-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 5px;
+    #sidebar-header {
+      padding: 10px; background-color: var(--border-color); font-weight: bold;
+      display: flex; justify-content: space-between; align-items: center;
     }
-    
-    .sidebar-header h2 { margin: 0; font-size: 1.5rem; }
-    
-    #title { text-decoration: none; color: var(--accent); }
-    
-    #theme-btn {
-        background: rgba(158, 158, 158, 0.5);
-        border: none;
-        color: var(--text-color);
-        font-size: 1.2rem;
-        cursor: pointer;
-        padding: 5px;
-        border-radius: 4px;
-    }
-    #theme-btn:hover { background-color: rgba(188, 188, 188, 0.5); }
+    .icon-btn { background: none; border: none; color: inherit; cursor: pointer; font-size: 14px; }
+    .icon-btn:hover { opacity: 0.7; }
 
-    .sidebar-divider {
-        border: 0;
-        border-top: 1px solid var(--border-color);
-        margin: 5px 0;
-        width: 100%;
-        transition: border-color 0.3s;
+    #file-list { flex: 1; overflow-y: auto; }
+    .file-item {
+      padding: 8px 15px; cursor: pointer; display: flex; justify-content: space-between;
+      font-size: 14px; color: var(--text-color); border-bottom: 1px solid var(--border-color);
     }
+    .file-item:hover { background-color: var(--item-hover); }
+    .file-item.active { background-color: #094771; color: #fff; border-left: 3px solid #007acc; }
+    .file-delete { display: none; color: #f85149; }
+    .file-item:hover .file-delete { display: block; }
 
-    .group-label {
-        font-size: 0.65rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #757575;
-        font-weight: bold;
-    }
+    /* Main Editor Area */
+    #main-area { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
 
-    .control-group {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        margin-bottom: 5px;
+    /* Toolbar & Menus */
+    #toolbar {
+      background-color: var(--toolbar-bg); padding: 10px 15px; display: flex;
+      justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);
     }
-    label { font-size: 0.9rem; font-weight: 500; }
-    input {
-        padding: 8px;
-        background-color: var(--bg-color);
-        border: 1px solid var(--border-color);
-        color: var(--text-color);
-        border-radius: 4px;
+    #button-group { display: flex; gap: 8px; align-items: center; }
+
+    .toolbar-btn {
+      background-color: #444; color: #fff; border: 1px solid #555; padding: 6px 10px;
+      cursor: pointer; border-radius: 4px; font-size: 13px; font-weight: bold;
     }
-    button.action-btn {
-        padding: 10px;
-        background-color: var(--accent);
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: background-color 0.2s;
-        text-align: left;
+    .toolbar-btn:hover { background-color: #555; }
+    body.light-theme .toolbar-btn { background-color: #ddd; color: #333; border-color: #bbb; }
+    body.light-theme .toolbar-btn:hover { background-color: #ccc; }
+
+    .toolbar-input {
+      width: 40px; background-color: #333; color: #ccc; border: 1px solid #444;
+      border-radius: 4px; padding: 4px; text-align: center; font-family: monospace; font-size: 13px; outline: none;
     }
-    button.action-btn:hover { background-color: var(--accent-hover); }
-    
-    #indentation{ font-family: monospace; width: 7em; }
-    
-    /* Right Panel: Editor Area */
-    #right-panel {
-        display: flex;
-        flex-grow: 1;
-        background-color: var(--bg-color);
-        height: 100%;
-        overflow: hidden;
+    .toolbar-input:focus { border-color: #4CAF50; }
+    body.light-theme .toolbar-input { background-color: #fff; color: #333; border-color: #ccc; }
+
+    #lang-badge {
+        font-size: 11px; padding: 2px 6px; background-color: #007acc; color: white;
+        border-radius: 3px; margin-left: 10px; font-weight: bold;
     }
 
-    #line-numbers {
-        width: 45px;
-        padding: 20px 10px 20px 5px;
-        text-align: right;
-        background-color: var(--panel-bg);
-        color: #858585;
-        font-family: 'Consolas', 'Courier New', monospace;
-        font-size: 14px;
-        line-height: 1.5;
-        border-right: 1px solid var(--border-color);
-        user-select: none;
-        overflow: hidden;
-        flex-shrink: 0;
-        box-sizing: border-box;
+    /* Dropdown */
+    .menu-container { position: relative; }
+    .menu-dropdown {
+      display: none; position: absolute; top: 100%; right: 0; background-color: var(--sidebar-bg);
+      min-width: 220px; box-shadow: 0px 8px 16px rgba(0,0,0,0.5); z-index: 9000;
+      border: 1px solid var(--border-color); padding: 8px 0; flex-direction: column;
+    }
+    .menu-dropdown.show { display: flex; }
+    .menu-item {
+      background: none; color: var(--text-color); border: none; padding: 10px 20px;
+      text-align: left; cursor: pointer; font-size: 13px; width: 100%; display: flex; gap: 8px;
+    }
+    .menu-item:hover { background-color: var(--item-hover); }
+
+    /* Editor Container */
+    #editor-container { flex: 1; display: flex; position: relative; overflow: hidden; }
+    .CodeMirror { flex: 1; height: 100% !important; font-size: 15px; font-family: 'Courier New', Courier, monospace; }
+
+    /* Minimap */
+    #minimap-container { width: 100px; height: 100%; border-left: 1px solid var(--border-color); background: var(--sidebar-bg); position: relative; flex-shrink: 0; }
+    #minimap-container .CodeMirror { font-size: 3px !important; line-height: 4px !important; }
+    #minimap-slider {
+      position: absolute; top: 0; right: 0; width: 100%; background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3); z-index: 20; pointer-events: none;
     }
 
-    #editor-container {
-        flex-grow: 1;
-        position: relative;
-    }
-    
-    #highlighting, #bibtex-input {
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        width: 100%; height: 100%;
-        padding: 20px;
-        margin: 0;
-        border: none;
-        outline: none;
-        box-sizing: border-box;
-        
-        font-family: 'Consolas', 'Courier New', monospace;
-        font-size: 14px;
-        line-height: 1.5;
-        tab-size: 4;
-        
-        white-space: pre;
-        word-wrap: normal;
-        overflow-wrap: normal;
-        overflow: auto;
-    }
-    
-    #highlighting {
-        z-index: 1;
-        background-color: var(--bg-color);
-        color: var(--text-color);
-        pointer-events: none;
-    }
-    
-    #bibtex-input {
-        z-index: 2;
-        background-color: transparent;
-        color: transparent;
-        caret-color: var(--text-color);
-        resize: none;
-    }
-    
-    .hl-type { color: var(--type-color); font-weight: bold; }
-    .hl-key { color: var(--key-color); }
-    .hl-field { color: var(--field-color); }
-    .hl-string { color: var(--string-color); }
-    .hl-comment { color: var(--comment-color); font-style: italic; }
-
-    #toast {
-        visibility: hidden;
-        min-width: 250px;
-        background-color: rgba(var(--accent-rgb), 0.85);
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
-        color: white;
-        text-align: center;
-        border-radius: 6px;
-        padding: 12px 20px;
-        position: fixed;
-        z-index: 100;
-        right: 30px;
-        bottom: 20px;
-        font-size: 1rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        opacity: 0;
-        transition: opacity 0.3s, visibility 0.3s, bottom 0.3s;
-    }
-    #toast.show {
-        visibility: visible;
-        opacity: 0.80;
-        bottom: 30px;
-    }
-    
-    /* Duplicate Results Text Area */
-    #duplicate-results {
-        display: none; /* Hidden initially */
-        width: 100%;
-        min-height: 120px;
-        background-color: var(--dup-bg-color);
-        border: 1px solid var(--border-color);
-        color: var(--dup-color);
-        border-radius: 4px;
-        padding: 8px;
-        box-sizing: border-box;
-        font-family: 'Consolas', 'Courier New', monospace;
-        font-size: 0.8rem;
-        resize: vertical;
-        margin-top: 5px;
-    }
-    #duplicate-results.show {
-        display: block;
-    }
-
-
-    .footer {
-        font-size: 0.75rem;
-        color: #555555;
-        margin-bottom: -5px;
-        text-align: center;
-        padding-top: 5em;
-    }
-	
-	/* Custom Search UI */
+    /* Search Box */
     #search-box {
-        position: absolute;
-        top: 10px;
-        right: 20px;
-        background-color: var(--panel-bg);
-        border: 1px solid var(--border-color);
-        padding: 5px 10px;
-        border-radius: 4px;
-        display: none; /* Hidden initially */
-        align-items: center;
-        gap: 10px;
-        z-index: 10;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      position: absolute; top: 10px; right: 120px; z-index: 100; background: var(--sidebar-bg);
+      padding: 6px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-color); display: none; flex-direction: column; gap: 8px;
     }
-    #search-box.show {
-        display: flex;
-    }
-    #search-input {
-        background-color: var(--bg-color);
-        border: 1px solid var(--border-color);
-        color: var(--text-color);
-        padding: 4px 8px;
-        border-radius: 2px;
-        outline: none;
-    }
-    #search-count {
-        font-size: 0.8rem;
-        color: #858585;
-    }
-    .close-search {
-        background: none;
-        border: none;
-        color: var(--text-color);
-        cursor: pointer;
-        font-weight: bold;
-    }
-    .close-search:hover { color: #ff8c8c; }
-	
-	    .search-nav-btn {
-        background-color: var(--bg-color);
-        border: 1px solid var(--border-color);
-        color: var(--text-color);
-        cursor: pointer;
-        padding: 4px 8px;
-        border-radius: 2px;
-        font-size: 0.8rem;
-    }
-    .search-nav-btn:hover { background-color: var(--accent); color: white; }
-    
-    .search-options {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        border-left: 1px solid var(--border-color);
-        padding-left: 10px;
-        margin-right: 5px;
-    }
-    .search-options label {
-        font-size: 0.85rem;
-        cursor: pointer;
-        font-weight: bold;
-        user-select: none;
-    }
-    
-    /* Search Highlight Color */
-    .search-match {
-        background-color: rgba(255, 255, 0, 0.2);
-        border-radius: 2px;
+    .search-row { display: flex; align-items: center; gap: 5px; }
+    .search-row input[type="text"] { padding: 5px 8px; border: 1px solid #555; border-radius: 4px; background: #333; color: #fff;}
+    body.light-theme .search-row input[type="text"] { background: #fff; color: #000; border-color: #ccc; }
+    .search-highlight { background-color: rgba(250, 250, 10, 0.3); }
+    .search-box-scrollbar-mark { background: rgba(200, 100, 0, 0.8); }
+
+    /* Auto-highlight */
+    .auto-highlight { background-color: rgba(255, 255, 255, 0.2); border-radius: 2px; }
+    body.light-theme .auto-highlight { background-color: rgba(0, 0, 0, 0.15); }
+    .auto-highlight-scrollbar-mark { background-color: rgba(100, 200, 255, 0.5); }
+
+    /* Custom Diff Gutter */
+    .diff-gutter { width: 8px !important; background: transparent; }
+    .diff-marker { width: 4px; height: 1.4em; margin-left: 2px; border-radius: 2px; }
+    .diff-added { background-color: #2ea043; }
+    .diff-modified { background-color: #3182ce; }
+    .diff-deleted {
+      width: 0; height: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+      border-left: 6px solid #f85149; position: relative; top: -4px;
     }
 
-    a { color: inherit; }
-    textarea::placeholder { color: #888 !important; font-style: italic; }
-</style>
+    /* Gutter Bookmarks */
+    .cm-highlighted-gutter { background-color: #ee00ff !important; }
+    body.light-theme .cm-highlighted-gutter { background-color: #ff99ff !important; }
+    .CodeMirror-linenumbers { cursor: pointer; }
+    .cm-bookmark-scrollbar-mark { background-color: #ee00ff; height: 3px !important; opacity: 0.9; }
+    body.light-theme .cm-bookmark-scrollbar-mark { background-color: #ff99ff; }
+
+    /* Whitespace Visibility */
+    .show-whitespaces .cm-space { background-image: radial-gradient(circle at center, rgba(128, 128, 128, 0.3) 1px, transparent 1.5px); background-size: 1ch 100%; }
+    .show-whitespaces .cm-tab { position: relative; }
+    .show-whitespaces .cm-tab::before { content: "→"; position: absolute; left: 0; width: 100%; text-align: center; color: rgba(128, 128, 128, 0.3); pointer-events: none; }
+    .show-whitespaces .CodeMirror-line::after { content: "↵"; color: rgba(128, 128, 128, 0.3); padding-left: 2px; font-size: 0.9em; vertical-align: baseline; pointer-events: none; }
+    .cm-trailingspace { background-color: rgba(255, 0, 0, 0.1); }
+
+    /* Instructions Pane */
+    #instructions-pane {
+      display: none; position: absolute; top: 20px; bottom: 20px; left: 20px; right: 20px;
+      background-color: var(--sidebar-bg); color: var(--text-color); z-index: 2000; padding: 40px;
+      box-sizing: border-box; overflow-y: auto; border-radius: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      border: 1px solid var(--border-color);
+    }
+    #close-instructions-btn { position: absolute; top: 20px; right: 25px; background: none; border: none; color: #888; font-size: 24px; cursor: pointer; }
+    #close-instructions-btn:hover { color: var(--text-color); }
+    .instructions-content h2 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-top:0; }
+    .instructions-content h3 { color: #4CAF50; margin-top: 30px; }
+    .instructions-content ul { line-height: 1.8; }
+    .instructions-content kbd { background-color: #333; border: 1px solid #555; border-radius: 4px; padding: 2px 6px; font-size: 12px; font-family: monospace; color: #fff; }
+    body.light-theme .instructions-content kbd { background-color: #f0f0f0; border-color: #ccc; color: #333; }
+
+    /* --- NATIVE UI SCROLLBARS (Sidebar, Instructions) --- */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    ::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; border: 2px solid var(--sidebar-bg); }
+    ::-webkit-scrollbar-thumb:hover { background: #777; }
+
+    body.light-theme ::-webkit-scrollbar-thumb { background: #bbb; }
+    body.light-theme ::-webkit-scrollbar-thumb:hover { background: #999; }
+
+    /* --- CODEMIRROR SIMPLE SCROLLBARS THEME FIX --- */
+    .CodeMirror-simplescroll-horizontal, .CodeMirror-simplescroll-vertical {
+      background: var(--sidebar-bg) !important;
+    }
+    .CodeMirror-simplescroll-scrollbar {
+      background: #555 !important;
+      border-radius: 4px;
+      border: 1px solid var(--sidebar-bg);
+    }
+    .CodeMirror-simplescroll-scrollbar:hover { background: #777 !important; }
+
+    body.light-theme .CodeMirror-simplescroll-scrollbar { background: #bbb !important; }
+    body.light-theme .CodeMirror-simplescroll-scrollbar:hover { background: #999 !important; }
+
+
+    /* Toast */
+    #toast-container { position: fixed; bottom: 20px; left: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;}
+    .toast { background-color: #333; color: #fff; padding: 10px 16px; border-radius: 4px; font-size: 13px; border-left: 4px solid #4CAF50; opacity: 0; transition: 0.3s;}
+    .toast.show { opacity: 1; }
+    body.light-theme .toast { background-color: #fff; color: #333; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+  </style>
 </head>
 <body>
 
-<div id="sidebar">
-    <div class="sidebar-header">
-        <h2 title="by Minhas Kamal"><a id="title" href="https://github.com/MinhasKamal/BibTeXPad" target="_blank">BibTeXPad</a></h2>
-        <button id="theme-btn" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <span>EXPLORER</span>
+      <button class="icon-btn" id="new-file-btn" title="New File"><i class="fas fa-plus"></i></button>
     </div>
-    
-    <!-- Formatting & Cleaning Group -->
-    <div class="group-label">Formatting & Cleaning</div>
-    <div class="control-group">
-        <div>
-            <label for="indentation">Indentation: </label>
-            <input type="text" id="indentation" value="	" title="Other edit buttons will also perform indentation">
+    <div id="file-list"></div>
+  </div>
+
+  <!-- Main Area -->
+  <div id="main-area">
+    <div id="toolbar">
+      <div>
+        <span id="current-file-name" style="font-weight:bold;">No file open</span>
+        <span id="lang-badge">Plain Text</span>
+      </div>
+      <div id="button-group">
+        <span style="font-size: 13px; color: #ccc;">Indent:</span>
+        <input type="text" id="indent-input" class="toolbar-input" title="Type a number or 'tab'">
+
+        <button id="stage-btn" class="toolbar-btn" title="Stage Changes (Clear Gutter)"><i class="fas fa-check-double"></i></button>
+        <div class="menu-container">
+          <button id="menu-btn" class="toolbar-btn"><i class="fas fa-bars"></i></button>
+          <div id="menu-dropdown" class="menu-dropdown">
+            <button id="theme-btn" class="menu-item"><i class="fas fa-moon"></i> Toggle Theme</button>
+            <button id="wrap-btn" class="menu-item"><i class="fas fa-arrows-alt-h"></i> Toggle Word Wrap</button>
+            <button id="fold-btn" class="menu-item"><i class="fas fa-compress-arrows-alt"></i> Toggle Fold All</button>
+            <button id="minimap-btn" class="menu-item"><i class="fas fa-map"></i> Toggle Minimap</button>
+            <div style="height:1px; background:var(--border-color); margin:4px 0;"></div>
+            <button id="whitespace-btn" class="menu-item"><i class="fas fa-low-vision"></i> Toggle Whitespaces</button>
+            <button id="trim-btn" class="menu-item"><i class="fas fa-strikethrough"></i> Trim Whitespace</button>
+            <button id="format-btn" class="menu-item"><i class="fas fa-broom"></i> Format Code</button>
+            <div style="height:1px; background:var(--border-color); margin:4px 0;"></div>
+            <button id="instructions-btn" class="menu-item"><i class="fas fa-info-circle"></i> Instructions</button>
+          </div>
         </div>
-        <button class="action-btn" onclick="indentEntries()">1. Indent</button>
-    </div>
-    <div class="control-group">
-        <button class="action-btn" onclick="removeExtraSpaces()" title="eg. `title =  { The Kamal }` -> `title = {The Kamal}`">2. Remove Extra Spaces</button>
-    </div>
-    <div class="control-group">
-        <button class="action-btn" onclick="lowercaseTypesAndFields()" title="eg. `@ARTICLE` -> `@article`, `Title=` -> `title=`">3. Lowercase Types & Fields</button>
+      </div>
     </div>
 
-    <hr class="sidebar-divider">
+    <!-- Instructions Modal -->
+    <div id="instructions-pane">
+      <button id="close-instructions-btn" title="Close"><i class="fas fa-times"></i></button>
+      <div class="instructions-content">
+        <h2><i class="fas fa-info-circle" style="margin-right: 8px;"></i> Instructions</h2>
+        <p>Welcome to the Full Multi-Language IDE! Create multiple files and your work is safely saved in local storage.</p>
 
-    <!-- Field Operations Group -->
-    <div class="group-label">Field Operations</div>
-    <div class="control-group">
-        <label for="field-order">Field Order:</label>
-        <input type="text" id="field-order" value="author,title,journal,booktitle,year,month,day,volume,number,pages,organization,publisher,shorttitle,doi">
-        <button class="action-btn" onclick="reorderFields()">4. Reorder Fields</button>
-    </div>
-    <div class="control-group">
-        <label for="cap-fields">Fields to be Capitalized:</label>
-        <input type="text" id="cap-fields" value="title,journal,booktitle">
-        <button class="action-btn" onclick="capitalizeFields()">5. Capitalize Fields</button>
-    </div>
-    <div class="control-group">
-        <label for="keep-fields">Fields to be Kept:</label>
-        <input type="text" id="keep-fields" value="author,title,journal,booktitle,year,shorttitle,doi">
-        <button class="action-btn" onclick="keepFields()" title="Other fields will be removed">6. Keep Fields</button>
-    </div>
-    <div class="control-group">
-        <label for="remove-fields">Fields to be Removed:</label>
-        <input type="text" id="remove-fields" value="abstract,url,eprint,issn,isbn,editor,location,address,keywords">
-        <button class="action-btn" onclick="removeFields()">7. Remove Fields</button>
-    </div>
+        <h3><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h3>
+        <ul>
+          <li><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd> Smart Indent</li>
+          <li><kbd>Ctrl</kbd> + <kbd>/</kbd> Toggle Comment</li>
+          <li><kbd>Ctrl</kbd> + <kbd>F</kbd> Find / Search</li>
+          <li><kbd>Alt</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd> Move Line Up/Down</li>
+          <li><kbd>Alt</kbd> + <kbd>Drag</kbd> Column / Rectangular Selection</li>
+        </ul>
 
-    <hr class="sidebar-divider">
-
-    <!-- Citations & Utilities Group -->
-    <div class="group-label">Utilities</div>
-    <div class="control-group">
-        <div>
-            <label for="override-keys">Overwrite Existing Keys: </label>
-            <input type="checkbox" id="override-keys">
-        </div>
-        <button class="action-btn" onclick="generateKeys()" title="If no key is available, then generates key as [AuthorYearTitle]">8. Generate Keys</button>
-    </div>
-    <div class="control-group">
-        <div>
-            <label for="title-threshold">Title (%):</label>
-            <input type="number" id="title-threshold" value="80" min="40" max="100">
-            <label for="author-threshold">; Author (%):</label>
-            <input type="number" id="author-threshold" value="60" min="40" max="100">
-        </div>
-        <button class="action-btn" onclick="checkDuplicates()">9. Check Duplicates</button>
-        <textarea id="duplicate-results" readonly placeholder="Duplicates will appear here..."></textarea>
+        <h3><i class="fas fa-bolt"></i> Power Features</h3>
+        <ul>
+          <li><strong>Smart Indentation:</strong> Auto-sniffs indent rules on load (Tabs vs Spaces, Size).</li>
+          <li><strong>Multi-Language:</strong> Auto-loads syntax highlighting based on file extension (.py, .js, .cpp).</li>
+          <li><strong>Super Linter:</strong> Extracts and lints JS and CSS embedded directly inside HTML files.</li>
+          <li><strong>Diff Gutter:</strong> Tracks un-staged edits natively.</li>
+          <li><strong>Minimap:</strong> Click to scroll, drags proportionately.</li>
+          <li><strong>Gutter Bookmarks:</strong> Click a line number to bookmark it and highlight it on the scrollbar.</li>
+        </ul>
+      </div>
     </div>
 
-    <div class="footer"><a href="https://github.com/MinhasKamal/BibTeXPad" target="_blank">BibTeXPad</a> by <a href="https://minhaskamal.github.io" target="_blank">Minhas Kamal</a></div>
-</div>
+    <!-- Search Box -->
+    <div id="search-box">
+      <div class="search-row">
+        <input type="text" id="search-input" placeholder="Find...">
+        <span id="search-stats" style="color:#aaa;font-size:12px;margin:0 5px;">0/0</span>
+        <label id="match-case" title="Match Case" style="display:flex;align-items:center;gap:4px;color:#aaa;font-size:12px;cursor:pointer;">
+          <input type="checkbox" id="match-case-cb"> <b>Aa</b>
+        </label>
+        <button id="search-prev" class="toolbar-btn"><i class="fas fa-chevron-up"></i></button>
+        <button id="search-next" class="toolbar-btn"><i class="fas fa-chevron-down"></i></button>
+        <button id="search-close" class="toolbar-btn"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="search-row">
+        <input type="text" id="replace-input" placeholder="Replace...">
+        <button id="replace-btn" class="toolbar-btn">Replace</button>
+        <button id="replace-all-btn" class="toolbar-btn">All</button>
+      </div>
+    </div>
 
-<div id="right-panel">
-    <div id="line-numbers">1</div>
+    <!-- Editor -->
     <div id="editor-container">
-		<!-- Custom Search Bar -->
-		<div id="search-box">
-			<input type="text" id="search-input" placeholder="Find...">
-			<span id="search-count">0/0</span>
-
-			<div style="display: flex; gap: 2px;">
-				<button class="search-nav-btn" id="search-prev" title="Previous (Shift+Enter)">▲</button>
-				<button class="search-nav-btn" id="search-next" title="Next (Enter)">▼</button>
-			</div>
-
-			<div class="search-options">
-				<input type="checkbox" id="search-match-case" title="Match Case">
-				<label for="search-match-case" title="Match Case">Aa</label>
-			</div>
-
-			<button class="close-search" onclick="closeSearch()">✕</button>
-		</div>
-		
-        <div id="highlighting" aria-hidden="true"></div>
-        <textarea id="bibtex-input" spellcheck="false" wrap="off" placeholder="ⓘ Clean and format, automatically generate keys, and detect duplicates.
-As there are no servers, your data never leaves your device. So, it is private, safe, and free for all kinds of usage."></textarea>
+      <textarea id="code-editor"></textarea>
+      <div id="minimap-container">
+        <textarea id="minimap-textarea"></textarea>
+        <div id="minimap-slider"></div>
+      </div>
     </div>
-</div>
+  </div>
 
-<div id="toast"></div>
+  <div id="toast-container"></div>
 
-<script>
-    const inputEl = document.getElementById('bibtex-input');
-    const highlightEl = document.getElementById('highlighting');
-    const lineNumbersEl = document.getElementById('line-numbers');
-    const toastEl = document.getElementById('toast');
-    let toastTimeout;
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
 
-    let isDarkTheme = true;
-    function toggleTheme() {
-        isDarkTheme = !isDarkTheme;
-        const root = document.documentElement;
-        const btn = document.getElementById('theme-btn');
-        if (isDarkTheme) {
-            root.removeAttribute('data-theme');
-            btn.innerText = '🌙';
-        } else {
-            root.setAttribute('data-theme', 'light');
-            btn.innerText = '☀️';
+  <!-- Addons for formatting -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.9/beautify-html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.9/beautify.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.9/beautify-css.min.js"></script>
+
+  <!-- Syntax Dynamic Loader Module (CodeMirror auto-loader) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/mode/loadmode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/meta.min.js"></script>
+
+  <!-- Linter Libraries (Client-side) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.6/jshint.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/htmlhint@1.9.2/dist/htmlhint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/csslint/1.0.5/csslint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/lint/lint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/lint/javascript-lint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/lint/html-lint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/lint/css-lint.min.js"></script>
+
+  <!-- Other Addons (Search, Fold, Match, Whitespace, Scroll, Comment) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/searchcursor.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/matchesonscrollbar.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/selection/active-line.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/matchbrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closetag.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/trailingspace.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/foldcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/foldgutter.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/brace-fold.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/xml-fold.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/indent-fold.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/markdown-fold.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/comment-fold.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/scroll/annotatescrollbar.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/scroll/simplescrollbars.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/comment/comment.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/diff@5.2.0/dist/diff.min.js"></script>
+
+  <script>
+    // Define base path for CodeMirror modes so it can auto-fetch syntax files dynamically
+    CodeMirror.modeURL = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/%N/%N.min.js";
+
+    // --- UTILS ---
+    function showToast(msg) {
+      const tc = document.getElementById("toast-container");
+      const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
+      tc.appendChild(t); setTimeout(() => t.classList.add("show"), 10);
+      setTimeout(() => { t.classList.remove("show"); setTimeout(()=>t.remove(), 300); }, 3000);
+    }
+
+    // --- SUPER LINTER FOR HTMLMIXED (HTML + Inline JS + Inline CSS) ---
+    CodeMirror.registerHelper("lint", "htmlmixed", function(text, options, editor) {
+        var found = [];
+
+        // 1. Run HTML Linter
+        if (CodeMirror.helpers.lint.html) {
+            var htmlErrors = CodeMirror.helpers.lint.html(text, options, editor) || [];
+            found = found.concat(htmlErrors);
         }
-    }
 
-    function logMessage(msg) {
-        toastEl.innerText = msg;
-        toastEl.classList.add('show');
-        clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(() => { toastEl.classList.remove('show'); }, 3000);
-    }
+        // 2. Extract and Lint Embedded JavaScript
+        var scriptRegex = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
+        var match;
+        while ((match = scriptRegex.exec(text)) !== null) {
+            var scriptCode = match[1];
+            var preMatch = text.substring(0, match.index + match[0].indexOf(match[1]));
+            var lineOffset = preMatch.split('\n').length - 1;
 
-    function updateLineNumbers() {
-        const linesCount = inputEl.value.split('\n').length;
-        if (inputEl.dataset.linesCount != linesCount) {
-            let numbers = '';
-            for (let i = 1; i <= linesCount; i++) numbers += i + '\n';
-            lineNumbersEl.innerText = numbers;
-            inputEl.dataset.linesCount = linesCount;
-        }
-    }
-
-    function updateHighlighting() {
-        let text = inputEl.value;
-        if(text.endsWith('\n')) text += ' '; 
-        
-        text = text.replace(/[\uE000\uE001]/g, '');
-        text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        
-        let tokens = [];
-        function token(cls, str) {
-            let id = tokens.length;
-            tokens.push(`<span class="${cls}">${str}</span>`);
-            return `\uE000${id}\uE001`;
-        }
-
-        text = text.replace(/(=)(\s*)(\{(?:[^{}]|(?:\{(?:[^{}]|(?:\{[^{}]*\}))*\}))*\}|".*?"|[^{}",\s\uE000\uE001]+)/g, (m, eq, space, val) => eq + space + token('hl-string', val));
-        text = text.replace(/(%.*)/g, (m) => token('hl-comment', m));
-        text = text.replace(/^(\s*)([a-zA-Z0-9_-]+)(\s*=)/gm, (m, space, field, eq) => space + token('hl-field', field) + eq);
-        text = text.replace(/(@[a-zA-Z]+)(\s*\{)(\s*)([^,=\}\s\uE000\uE001]+)?(,?)/g, (m, type, brace, space, key, comma) => {
-            let res = token('hl-type', type) + brace + space;
-            if (key) res += token('hl-key', key);
-            res += comma;
-            return res;
-        });
-
-        let prevText;
-        do {
-            prevText = text;
-            text = text.replace(/\uE000(\d+)\uE001/g, (m, id) => tokens[id]);
-        } while (text !== prevText);
-
-        highlightEl.innerHTML = text;
-        updateLineNumbers();
-    }
-
-    inputEl.addEventListener('input', updateHighlighting);
-    inputEl.addEventListener('scroll', () => {
-        highlightEl.scrollTop = inputEl.scrollTop;
-        highlightEl.scrollLeft = inputEl.scrollLeft;
-        lineNumbersEl.scrollTop = inputEl.scrollTop;
-    });
-
-    function setEditorText(newText) {
-        inputEl.focus();
-        inputEl.select();
-        const success = document.execCommand('insertText', false, newText);
-        if (!success) {
-            inputEl.value = newText;
-            updateHighlighting();
-        }
-        inputEl.setSelectionRange(0, 0); 
-    }
-
-    // --- Parser ---
-    function parseBibtex(text) {
-        const entries = [];
-        const entryStartRegex = /@([a-zA-Z]+)\s*\{/g;
-        let match;
-        
-        while ((match = entryStartRegex.exec(text)) !== null) {
-            let type = match[1];
-            let startIndex = match.index;
-            
-            if (type.toLowerCase() === 'string' || type.toLowerCase() === 'preamble') {
-                continue;
-            }
-            
-            let bodyStartIndex = entryStartRegex.lastIndex;
-            let braceCount = 1; 
-            let i = bodyStartIndex;
-            
-            while (i < text.length && braceCount > 0) {
-                if (text[i] === '{') braceCount++;
-                if (text[i] === '}') braceCount--;
-                i++;
-            }
-            
-            let endIndex = i;
-            let entryBody = text.substring(bodyStartIndex, endIndex - 1);
-            let firstComma = entryBody.indexOf(',');
-            let firstEquals = entryBody.indexOf('=');
-            
-            let key = "";
-            let fieldsStr = "";
-            
-            if (firstComma !== -1 && (firstEquals === -1 || firstComma < firstEquals)) {
-                key = entryBody.substring(0, firstComma).trim();
-                fieldsStr = entryBody.substring(firstComma + 1);
-            } else {
-                key = "";
-                fieldsStr = entryBody;
-            }
-            
-            let fields = {};
-            let fieldKeyRegex = /([a-zA-Z0-9_-]+)\s*=\s*/g;
-            let fieldMatch;
-            
-            while ((fieldMatch = fieldKeyRegex.exec(fieldsStr)) !== null) {
-                let fKey = fieldMatch[1]; 
-                let vStart = fieldKeyRegex.lastIndex;
-                let vEnd = vStart;
-                
-                if (fieldsStr[vStart] === '{') {
-                    let fBrace = 0;
-                    for (let j = vStart; j < fieldsStr.length; j++) {
-                        if (fieldsStr[j] === '{') fBrace++;
-                        if (fieldsStr[j] === '}') fBrace--;
-                        if (fBrace === 0) { vEnd = j + 1; break; }
-                    }
-                } 
-                else if (fieldsStr[vStart] === '"') {
-                    for (let j = vStart + 1; j < fieldsStr.length; j++) {
-                        if (fieldsStr[j] === '"') { vEnd = j + 1; break; }
-                    }
-                } 
-                else {
-                    for (let j = vStart; j < fieldsStr.length; j++) {
-                        if (fieldsStr[j] === ',' || fieldsStr[j] === '\n') { vEnd = j; break; }
-                    }
-                    if (vEnd === vStart) vEnd = fieldsStr.length;
-                }
-                
-                if (vEnd > vStart) {
-                    fields[fKey] = fieldsStr.substring(vStart, vEnd).trim();
-                    fieldKeyRegex.lastIndex = vEnd;
-                }
-            }
-            entries.push({ type: type, key: key, fields: fields, start: startIndex, end: endIndex });
-            entryStartRegex.lastIndex = endIndex;
-        }
-        return entries;
-    }
-
-    function getFieldKey(entry, keyName) {
-        return Object.keys(entry.fields).find(k => k.toLowerCase() === keyName.toLowerCase());
-    }
-    function getFieldValue(entry, keyName) {
-        const k = getFieldKey(entry, keyName);
-        return k ? entry.fields[k] : null;
-    }
-    function getLineNumber(text, index) {
-        return text.substring(0, index).split('\n').length;
-    }
-
-    function applyModifiedEntries(rawText, entries) {
-        let result = "";
-        let lastEnd = 0;
-        
-        const indent = document.getElementById('indentation').value
-        
-        entries.forEach(e => {
-            result += rawText.substring(lastEnd, e.start);
-            let out = `@${e.type}{${e.key},\n`;
-            for (const [k, v] of Object.entries(e.fields)) {
-                out += `${indent}${k} = ${v},\n`;
-            }
-            out += `}`;
-            result += out;
-            lastEnd = e.end;
-        });
-        result += rawText.substring(lastEnd);
-        return result;
-    }
-
-    // --- Format Commands ---
-
-    function indentEntries() {
-        const rawText = inputEl.value;
-        const entries = parseBibtex(rawText);
-        if(entries.length === 0) { logMessage("No valid entries found."); return; }
-        setEditorText(applyModifiedEntries(rawText, entries));
-        logMessage("Indented successfully!");
-    }
-
-    function removeExtraSpaces() {
-        const rawText = inputEl.value;
-        const entries = parseBibtex(rawText);
-        if(entries.length === 0) { logMessage("No valid entries found."); return; }
-        
-        entries.forEach(entry => {
-            for (let k in entry.fields) {
-                let val = entry.fields[k];
-                val = val.replace(/[ \t]{2,}/g, ' ');
-                val = val.replace(/^\{\s+/, '{');
-                val = val.replace(/\s+\}$/, '}');
-                val = val.replace(/^"\s+/, '"');
-                val = val.replace(/\s+"$/, '"');
-                entry.fields[k] = val;
-            }
-        });
-        
-        setEditorText(applyModifiedEntries(rawText, entries));
-        logMessage("Removed extra spaces within fields!");
-    }
-
-    function lowercaseTypesAndFields() {
-        const rawText = inputEl.value;
-        const entries = parseBibtex(rawText);
-        if(entries.length === 0) { logMessage("No valid entries found."); return; }
-        
-        entries.forEach(entry => {
-            entry.type = entry.type.toLowerCase();
-            const lowerFields = {};
-            for (let k in entry.fields) {
-                lowerFields[k.toLowerCase()] = entry.fields[k];
-            }
-            entry.fields = lowerFields;
-        });
-        
-        setEditorText(applyModifiedEntries(rawText, entries));
-        logMessage("Lowercased types and field names!");
-    }
-
-    function reorderFields() {
-        const rawText = inputEl.value;
-        const order = document.getElementById('field-order').value.split(/[ ,;]+/).map(s => s.trim().toLowerCase());
-        const entries = parseBibtex(rawText);
-        
-        entries.forEach(entry => {
-            const newFields = {};
-            order.forEach(f => {
-                let actualKey = getFieldKey(entry, f);
-                if(actualKey) {
-                    newFields[actualKey] = entry.fields[actualKey];
-                    delete entry.fields[actualKey];
-                }
-            });
-            for(let key in entry.fields) {
-                newFields[key] = entry.fields[key];
-            }
-            entry.fields = newFields;
-        });
-        
-        setEditorText(applyModifiedEntries(rawText, entries));
-        logMessage("Reordered fields based on preferences!");
-    }
-
-    function capitalizeFields() {
-        const rawText = inputEl.value;
-        const capFields = document.getElementById('cap-fields').value.split(/[ ,;]+/).map(s => s.trim().toLowerCase());
-        const entries = parseBibtex(rawText);
-        const ignoreWords = ['a', 'an', 'the', 'and', 'but', 'or', 'for', 'nor', 'on', 'at', 'to', 'from', 'by', 'of', 'in'];
-        
-        entries.forEach(entry => {
-            capFields.forEach(f => {
-                let actualKey = getFieldKey(entry, f);
-                if(actualKey) {
-                    let val = entry.fields[actualKey];
-                    let isFirstWord = true;
-                    
-                    val = val.replace(/\b([a-zA-Z]+)\b/g, (match, word) => {
-                        if (word === word.toUpperCase() || /[A-Z]/.test(word.slice(1))) {
-                            isFirstWord = false;
-                            return word;
-                        }
-                        
-                        let lowerWord = word.toLowerCase();
-                        if (!isFirstWord && ignoreWords.includes(lowerWord)) {
-                            return lowerWord; 
-                        }
-                        isFirstWord = false;
-                        return lowerWord.charAt(0).toUpperCase() + lowerWord.slice(1);
+            if (CodeMirror.helpers.lint.javascript) {
+                var jsErrors = CodeMirror.helpers.lint.javascript(scriptCode, options, editor) || [];
+                jsErrors.forEach(function(err) {
+                    found.push({
+                        from: CodeMirror.Pos(err.from.line + lineOffset, err.from.ch),
+                        to: CodeMirror.Pos(err.to.line + lineOffset, err.to.ch),
+                        message: "JS: " + err.message, severity: err.severity
                     });
-                    
-                    entry.fields[actualKey] = val;
-                }
-            });
-        });
-        
-        setEditorText(applyModifiedEntries(rawText, entries));
-        logMessage("Applied Title Case to specified fields!");
-    }
-    
-    function keepFields() {
-        const rawText = inputEl.value;
-        const fieldsToKeep = document.getElementById('keep-fields').value.split(/[ ,;]+/).map(s => s.trim().toLowerCase());
-        const entries = parseBibtex(rawText);
-        
-        entries.forEach(entry => {
-            // Get all current field keys for this entry
-            const currentKeys = Object.keys(entry.fields);
-            
-            currentKeys.forEach(k => {
-                // If the current key is NOT in our "keep" list, delete it
-                if (!fieldsToKeep.includes(k.toLowerCase())) {
-                    delete entry.fields[k];
-                }
-            });
-        });
-        
-        setEditorText(applyModifiedEntries(rawText, entries));
-        logMessage(`Removed fields except: ${fieldsToKeep.join(', ')}`);
-    }
-
-    function removeFields() {
-        const rawText = inputEl.value;
-        const fieldsToRemove = document.getElementById('remove-fields').value.split(/[ ,;]+/).map(s => s.trim().toLowerCase());
-        const entries = parseBibtex(rawText);
-        
-        entries.forEach(entry => {
-            fieldsToRemove.forEach(f => {
-                let actualKey = getFieldKey(entry, f);
-                if(actualKey) delete entry.fields[actualKey];
-            });
-        });
-        
-        setEditorText(applyModifiedEntries(rawText, entries));
-        logMessage(`Removed fields: ${fieldsToRemove.join(', ')}`);
-    }
-
-    // --- Complex Author Parsing & Key Generation ---
-    
-    function getFirstAuthorLastName(authorStr) {
-        let clean = authorStr.replace(/\{|\}/g, '').trim();
-        // Split by standard BibTeX separators ("and") or dirty ones ("&", ";")
-        let authors = clean.split(/\b\s+and\s+\b|\s+&\s+|;/i);
-        let firstAuthor = authors[0].trim();
-        
-        if (firstAuthor.includes(',')) {
-            // Handles "Last, First" -> grabs everything before the comma
-            let lastNamePart = firstAuthor.substring(0, firstAuthor.indexOf(',')).trim();
-            return lastNamePart.replace(/[^a-zA-Z]/g, '');
-        } else {
-            // Handles "First Last" -> grabs the last word
-            let parts = firstAuthor.split(/\s+/);
-            return parts[parts.length - 1].replace(/[^a-zA-Z]/g, '');
-        }
-    }
-
-    function generateKeys() {
-        const rawText = inputEl.value;
-        const entries = parseBibtex(rawText);
-        const overrideKeys = document.getElementById('override-keys').checked;
-        
-        entries.forEach(entry => {
-            // Skip generation if a valid key already exists
-            if (!overrideKeys && entry.key && entry.key.trim() !== '') {
-                return;
-            }
-
-            let person = getFieldValue(entry, 'author');
-            let year = getFieldValue(entry, 'year');
-            let shorttitle = getFieldValue(entry, 'shorttitle');
-            let title = getFieldValue(entry, 'title');
-            
-            let lastName = ''
-            if(person) {
-                lastName = getFirstAuthorLastName(person);
-            }
-            let cleanYear = ''
-            if(year) {
-                cleanYear = year.replace(/[^0-9]/g, '');
-            }
-            let titlePart = ''
-            if(shorttitle){
-                titlePart = shorttitle.replace(/[^a-zA-Z0-9]/g, '')
-            } else if(title) {
-                titlePart = title.replace(/[^a-zA-Z0-9 ]/g, '').split(' ').slice(0, 2).join('');
-            }
-
-             entry.key = lastName + cleanYear + titlePart;
-        });
-        
-        setEditorText(applyModifiedEntries(rawText, entries));
-        if (!overrideKeys) {
-            logMessage("Generated MISSING keys!");
-        } else {
-            logMessage("Regenerated ALL keys!");
-        }
-    }
-
-    // --- Fuzzy Duplicate Checking Algorithms ---
-
-    // Standard string distance for titles
-    function levenshteinDistance(a, b) {
-        if(a.length === 0) return b.length;
-        if(b.length === 0) return a.length;
-        let matrix = [];
-        for(let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
-        for(let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
-        for(let i = 1; i <= b.length; i++) {
-            for(let j = 1; j <= a.length; j++) {
-                if(b.charAt(i-1) == a.charAt(j-1)) {
-                    matrix[i][j] = matrix[i-1][j-1];
-                } else {
-                    matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, Math.min(matrix[i][j-1] + 1, matrix[i-1][j] + 1));
-                }
+                });
             }
         }
-        return matrix[b.length][a.length];
-    }
 
-    function getStringSimilarity(s1, s2) {
-        if (!s1 || !s2) return 0;
-        s1 = s1.toLowerCase().replace(/[^a-z0-9]/g, '');
-        s2 = s2.toLowerCase().replace(/[^a-z0-9]/g, '');
-        let max = Math.max(s1.length, s2.length);
-        if (max === 0) return 0;
-        return (max - levenshteinDistance(s1, s2)) / max;
-    }
+        // 3. Extract and Lint Embedded CSS
+        var styleRegex = /<style\b[^>]*>([\s\S]*?)<\/style>/gi;
+        while ((match = styleRegex.exec(text)) !== null) {
+            var styleCode = match[1];
+            var preMatch = text.substring(0, match.index + match[0].indexOf(match[1]));
+            var lineOffset = preMatch.split('\n').length - 1;
 
-    // Jaccard similarity (word set overlap) for Authors to ignore formatting/ordering differences
-    function getAuthorSimilarity(a1, a2) {
-        if (!a1 || !a2) return 0;
-        
-        const getWords = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, ' ').split(/\s+/).filter(w => w.length > 1 && w !== 'and');
-        const w1 = getWords(a1);
-        const w2 = getWords(a2);
-        
-        if (w1.length === 0 || w2.length === 0) return 0;
-        
-        let set1 = new Set(w1);
-        let set2 = new Set(w2);
-        let matchCount = 0;
-        
-        set1.forEach(w => {
-            if (set2.has(w)) matchCount++;
-        });
-        
-        let unionSize = new Set([...w1, ...w2]).size;
-        return matchCount / unionSize;
-    }
-
-    function checkDuplicates() {
-        const rawText = inputEl.value;
-        const entries = parseBibtex(rawText);
-        const exactDups = [];
-        const fuzzyDups = [];
-        const seenKeys = new Map();
-        
-        const titleThresh = parseInt(document.getElementById('title-threshold').value, 10) / 100;
-        const authorThresh = parseInt(document.getElementById('author-threshold').value, 10) / 100;
-        
-        // 1. Check Exact Keys
-        entries.forEach(e => {
-            if(e.key) { 
-                let currentLine = getLineNumber(rawText, e.start);
-                if(seenKeys.has(e.key)) { 
-                    let originalLine = seenKeys.get(e.key);
-                    exactDups.push(`'${e.key}' at ${originalLine} & ${currentLine}`);
-                } else { 
-                    seenKeys.set(e.key, currentLine); 
-                }
-            }
-        });
-
-        // 2. Check Fuzzy Metadata
-        for (let i = 0; i < entries.length; i++) {
-            for (let j = i + 1; j < entries.length; j++) {
-                let e1 = entries[i];
-                let e2 = entries[j];
-                
-                let l1 = getLineNumber(rawText, e1.start);
-                let l2 = getLineNumber(rawText, e2.start);
-                
-                let t1 = getFieldValue(e1, 'title');
-                let t2 = getFieldValue(e2, 'title');
-                let a1 = getFieldValue(e1, 'author');
-                let a2 = getFieldValue(e2, 'author');
-                
-                let tSim = getStringSimilarity(t1, t2);
-                let aSim = getAuthorSimilarity(a1, a2); // Uses word-set overlap
-                
-                if (t1 && t2 && tSim >= titleThresh) {
-                    let k1 = e1.key || 'NoKey';
-                    let k2 = e2.key || 'NoKey';
-                  	if (k1 === k2){
-                        // do not include
-                	} else if (a1 && a2) {
-                        if (aSim >= authorThresh) {
-                            fuzzyDups.push(`'${k1}' at ${l1} & '${k2}' at ${l2} - Title: ${Math.round(tSim*100)}%, Author: ${Math.round(aSim*100)}%`);
-                        }
-                    } else {
-                        fuzzyDups.push(`'${k1}' at ${l1} & '${k2}' at ${l2} - Title: ${Math.round(tSim*100)}%`);
-                    }
-                }
+            if (CodeMirror.helpers.lint.css) {
+                var cssErrors = CodeMirror.helpers.lint.css(styleCode, options, editor) || [];
+                cssErrors.forEach(function(err) {
+                    found.push({
+                        from: CodeMirror.Pos(err.from.line + lineOffset, err.from.ch),
+                        to: CodeMirror.Pos(err.to.line + lineOffset, err.to.ch),
+                        message: "CSS: " + err.message, severity: err.severity
+                    });
+                });
             }
         }
-        
-        let alertMsg = [];
-        if (exactDups.length > 0) {
-            alertMsg.push(`# Exact Duplicate Keys:\n- ` + exactDups.join('\n- '));
-        }
-        if (fuzzyDups.length > 0) {
-            alertMsg.push(`# Potential Fuzzy Duplicates:\n- ` + fuzzyDups.join('\n- '));
-        }
-        
-        const resultsBox = document.getElementById('duplicate-results');
-        
-        if (alertMsg.length > 0) {
-            logMessage(`Found ${exactDups.length + fuzzyDups.length} duplicate(s)!`);
-            //alert(alertMsg.join('\n\n'));
-            resultsBox.value = alertMsg.join('\n\n');
-            resultsBox.classList.add('show');
-        } else {
-            logMessage("No duplicates found!");
-            resultsBox.value = "";
-            resultsBox.classList.remove('show');
-        }
-    }
-
-    updateHighlighting();
-	
-    // --- Custom Search Implementation ---
-    const searchBox = document.getElementById('search-box');
-    const searchInput = document.getElementById('search-input');
-    const searchCount = document.getElementById('search-count');
-    const searchMatchCase = document.getElementById('search-match-case');
-    const searchPrevBtn = document.getElementById('search-prev');
-    const searchNextBtn = document.getElementById('search-next');
-    
-    let searchMatches = [];
-    let currentMatchIndex = -1;
-
-    // 1. Intercept Ctrl+F / Cmd+F
-    document.addEventListener('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-            e.preventDefault();
-            searchBox.classList.add('show');
-            searchInput.focus();
-            searchInput.select();
-        }
-        if (e.key === 'Escape' && searchBox.classList.contains('show')) {
-            closeSearch();
-        }
+        return found;
     });
+
+    // --- KEYBOARD SHORTCUTS ---
+    function moveLineUp(cm) {
+      const from = cm.getCursor("from").line; const to = cm.getCursor("to").line;
+      if (from === 0) return;
+      const lineAbove = cm.getLine(from - 1);
+      const text = cm.getRange({line: from, ch: 0}, {line: to + 1, ch: 0});
+      cm.replaceRange(text + lineAbove + "\n", {line: from - 1, ch: 0}, {line: to + 1, ch: 0});
+      cm.setSelection({line: from - 1, ch: 0}, {line: to - 1, ch: null});
+    }
+    function moveLineDown(cm) {
+      const from = cm.getCursor("from").line; const to = cm.getCursor("to").line;
+      if (to >= cm.lineCount() - 1) return;
+      const lineBelow = cm.getLine(to + 1);
+      const text = cm.getRange({line: from, ch: 0}, {line: to + 1, ch: 0});
+      cm.replaceRange(lineBelow + "\n" + text, {line: from, ch: 0}, {line: to + 2, ch: 0});
+      cm.setSelection({line: from + 1, ch: 0}, {line: to + 1, ch: null});
+    }
+
+    // --- SYSTEM STATE & LOCALSTORAGE ---
+    let files = JSON.parse(localStorage.getItem("WebEditor_Files")) || [
+      { id: Date.now(), name: "main.py", content: "def hello_world():\n    print('Hello World')\n" },
+      { id: Date.now()+1, name: "index.html", content: "<html>\n<head>\n  <style>\n    body { color: red; }\n  </style>\n</head>\n<body>\n  <h1>Hi</h1>\n  <script>\n    console.log('Testing JS in HTML');\n  <\/script>\n</body>\n</html>" }
+    ];
+    let activeFileId = parseInt(localStorage.getItem("WebEditor_ActiveFile")) || files[0].id;
+    let baselineText = "";
+    let indentConfig = { useTabs: false, size: 4 };
+
+    // --- INIT MAIN EDITOR ---
+    const editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
+      mode: "null", theme: "monokai", lineNumbers: true, lineWrapping: false,
+      styleActiveLine: true, matchBrackets: true, autoCloseBrackets: true, autoCloseTags: true, foldGutter: true,
+      showTrailingSpace: true, scrollbarStyle: "simple",
+      gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers", "diff-gutter", "CodeMirror-foldgutter"],
+      lint: true,
+      extraKeys: {
+        "Tab": function(cm) {
+          if (cm.somethingSelected()) { cm.indentSelection("add"); }
+          else { cm.replaceSelection(indentConfig.useTabs ? "\t" : " ".repeat(indentConfig.size)); }
+        },
+        "Shift-Tab": function(cm) { cm.indentSelection("subtract"); },
+        "Ctrl-/": "toggleComment", "Cmd-/": "toggleComment",
+        "Ctrl-F": openSearch, "Cmd-F": openSearch,
+        "Alt-Up": moveLineUp, "Alt-Down": moveLineDown
+      }
+    });
+
+    // --- INIT MINIMAP ---
+    const minimap = CodeMirror.fromTextArea(document.getElementById("minimap-textarea"), {
+        mode: "null", theme: "monokai", readOnly: "nocursor", lineNumbers: false, scrollbarStyle: "null"
+    });
+    minimap.swapDoc(editor.getDoc().linkedDoc({sharedHist: false}));
+
+    // --- SMART INDENT SNIFFING ---
+    function detectIndent(code) {
+        const lines = code.split('\n', 500);
+        let minSpaces = Infinity; let usesTabs = false;
+        for (let line of lines) {
+            if (line.match(/^\t/)) { usesTabs = true; break; }
+            const match = line.match(/^(\s+)\S/);
+            if (match) {
+                const spaces = match[1].length;
+                if (spaces > 0 && spaces < minSpaces) minSpaces = spaces;
+            }
+        }
+        if (usesTabs) return { useTabs: true, size: 4 };
+        if (minSpaces === 2) return { useTabs: false, size: 2 };
+        return { useTabs: false, size: 4 };
+    }
+
+    const indentInput = document.getElementById("indent-input");
+    indentInput.addEventListener("change", (e) => {
+        const val = e.target.value.trim().toLowerCase();
+        if (val === "tab" || val === "tabs") { indentConfig.useTabs = true; indentConfig.size = 4; }
+        else {
+            const parsed = parseInt(val, 10);
+            if (!isNaN(parsed) && parsed > 0) { indentConfig.useTabs = false; indentConfig.size = parsed; }
+            else { indentInput.value = indentConfig.useTabs ? "tab" : indentConfig.size; showToast("Invalid indent size."); return; }
+        }
+        editor.setOption("indentUnit", indentConfig.size);
+        editor.setOption("tabSize", indentConfig.size);
+        editor.setOption("indentWithTabs", indentConfig.useTabs);
+        showToast(`Indentation set to ${indentConfig.useTabs ? 'Tabs' : indentConfig.size + ' spaces'}`);
+    });
+
+    // --- DIFF GUTTER ---
+    function updateDiffMarkers(text) {
+        if(text === baselineText) { editor.clearGutter("diff-gutter"); return; }
+        const diffs = Diff.diffLines(baselineText, text);
+        editor.operation(() => {
+            editor.clearGutter("diff-gutter");
+            let idx = 0;
+            for(let i=0; i<diffs.length; i++) {
+                const part = diffs[i];
+
+                // Detect Modification: A removal immediately followed by an addition
+                if (part.removed && i < diffs.length - 1 && diffs[i+1].added) {
+                    const nextPart = diffs[i+1];
+                    for(let j=0; j<nextPart.count; j++) {
+                        let m = document.createElement("div");
+                        m.className = "diff-marker diff-modified"; // Blue
+                        editor.setGutterMarker(idx+j, "diff-gutter", m);
+                    }
+                    idx += nextPart.count;
+                    i++; // Skip the next 'added' part since we just handled it
+                }
+                // Detect Pure Addition
+                else if (part.added) {
+                    for(let j=0; j<part.count; j++) {
+                        let m = document.createElement("div");
+                        m.className = "diff-marker diff-added"; // Green
+                        editor.setGutterMarker(idx+j, "diff-gutter", m);
+                    }
+                    idx += part.count;
+                }
+                // Detect Pure Deletion
+                else if (part.removed) {
+                    let m = document.createElement("div");
+                    m.className = "diff-marker diff-deleted"; // Red Triangle
+                    editor.setGutterMarker(Math.min(idx, editor.lineCount()-1), "diff-gutter", m);
+                }
+                // Unchanged lines
+                else {
+                    idx += part.count;
+                }
+            }
+        });
+    }
+
+
+    // --- DYNAMIC LANGUAGE & LINTING LOADER ---
+    function setEditorModeAndLinting(filename) {
+        let val = filename.toLowerCase(); let m, mode, spec;
+        if (m = /.+\.([^.]+)$/.exec(val)) {
+            let info = CodeMirror.findModeByExtension(m[1]);
+            if (info) { mode = info.mode; spec = info.mime; document.getElementById("lang-badge").innerText = info.name; }
+            else { mode = "null"; spec = "null"; document.getElementById("lang-badge").innerText = "Plain Text"; }
+        } else { mode = "null"; spec = "null"; document.getElementById("lang-badge").innerText = "Plain Text"; }
+
+        if (mode !== "null") {
+            CodeMirror.requireMode(mode, () => {
+                editor.setOption("mode", spec); minimap.setOption("mode", spec);
+            });
+        } else {
+            editor.setOption("mode", "null"); minimap.setOption("mode", "null");
+        }
+
+        if (mode === "javascript" || mode === "css" || mode === "htmlmixed") { editor.setOption("lint", true); }
+        else { editor.setOption("lint", false); }
+    }
+
+    // --- FILE MANAGEMENT ---
+    function saveFiles() {
+      if(activeFileId) { let f = files.find(f => f.id === activeFileId); if(f) f.content = editor.getValue(); }
+      localStorage.setItem("WebEditor_Files", JSON.stringify(files));
+      localStorage.setItem("WebEditor_ActiveFile", activeFileId);
+    }
+
+    function renderFileList() {
+      const list = document.getElementById("file-list"); list.innerHTML = '';
+      files.forEach(f => {
+        let d = document.createElement("div"); d.className = "file-item" + (f.id===activeFileId?" active":"");
+        let ext = f.name.split('.').pop().toLowerCase();
+        let icon = "fa-file-code";
+        if(ext === "py") icon = "fa-brands fa-python";
+        else if(ext === "js") icon = "fa-brands fa-js";
+        else if(ext === "html") icon = "fa-brands fa-html5";
+        else if(ext === "css") icon = "fa-brands fa-css3-alt";
+        else if(ext === "java") icon = "fa-brands fa-java";
+        else if(ext === "php") icon = "fa-brands fa-php";
+        else if(ext === "txt") icon = "fa-file-lines";
+
+        d.innerHTML = `<span><i class="fas ${icon}"></i> ${f.name}</span> <button class="icon-btn file-delete" onclick="deleteFile(${f.id}, event)"><i class="fas fa-trash"></i></button>`;
+        d.onclick = () => loadFile(f.id); list.appendChild(d);
+      });
+    }
+
+    function loadFile(id, isInitialLoad = false) {
+      if (!isInitialLoad) {
+          saveFiles(); // Only save if we are actually switching files!
+      }
+      activeFileId = id;
+      let f = files.find(f => f.id === id);
+      if(f) {
+        editor.setValue(f.content);
+        document.getElementById("current-file-name").textContent = f.name;
+        baselineText = f.content;
+        updateDiffMarkers(f.content);
+        setEditorModeAndLinting(f.name);
+
+        // Re-sniff indent
+        indentConfig = detectIndent(f.content);
+        indentInput.value = indentConfig.useTabs ? "tab" : indentConfig.size;
+        editor.setOption("indentUnit", indentConfig.size);
+        editor.setOption("tabSize", indentConfig.size);
+        editor.setOption("indentWithTabs", indentConfig.useTabs);
+      }
+      renderFileList();
+      clearSearchMarks();
+    }
+
+
+    window.deleteFile = function(id, e) {
+      e.stopPropagation(); files = files.filter(f => f.id !== id);
+      if(activeFileId === id) {
+        activeFileId = files.length ? files[0].id : null;
+        if(activeFileId) loadFile(activeFileId); else { editor.setValue(''); document.getElementById("current-file-name").textContent = "No file open"; }
+      }
+      saveFiles(); renderFileList();
+    }
+
+    document.getElementById("new-file-btn").onclick = () => {
+      let n = prompt("File name:", "script.js");
+      if(n) { let nf = { id: Date.now(), name: n, content: "" }; files.push(nf); loadFile(nf.id); }
+    };
+
+    document.getElementById("stage-btn").onclick = () => {
+        baselineText = editor.getValue(); editor.clearGutter("diff-gutter"); showToast("Changes staged.");
+    };
+
+    // --- UI TOGGLES ---
+    const menuDropdown = document.getElementById("menu-dropdown");
+    document.getElementById("menu-btn").onclick = (e) => { menuDropdown.classList.toggle("show"); e.stopPropagation(); };
+    document.addEventListener("click", () => menuDropdown.classList.remove("show"));
+
+    document.getElementById("theme-btn").onclick = () => document.body.classList.toggle("light-theme");
+
+    let isWrapped = false;
+    document.getElementById("wrap-btn").onclick = () => {
+        isWrapped = !isWrapped; editor.setOption("lineWrapping", isWrapped); minimap.setOption("lineWrapping", isWrapped);
+    };
+
+    let isMinimap = true;
+    document.getElementById("minimap-btn").onclick = () => {
+        isMinimap = !isMinimap; document.getElementById("minimap-container").style.display = isMinimap ? "block" : "none";
+    };
+
+    // --- FOLD ALL ---
+    let isAllFolded = false;
+    document.getElementById("fold-btn").onclick = () => {
+        isAllFolded = !isAllFolded;
+        const action = isAllFolded ? "fold" : "unfold";
+        editor.operation(() => {
+            for (let i = 0; i < editor.lineCount(); i++) editor.foldCode(CodeMirror.Pos(i, 0), null, action);
+        });
+    };
+
+    // --- FORMAT CODE ---
+    document.getElementById("format-btn").onclick = () => {
+        let f = files.find(f => f.id === activeFileId); if(!f) return;
+        let ext = f.name.split('.').pop().toLowerCase();
+        let fmt = editor.getValue();
+        if (ext === "html") { fmt = html_beautify(fmt, {indent_size: indentConfig.size, preserve_newlines: true}); }
+        else if (ext === "js" || ext === "json") { fmt = js_beautify(fmt, {indent_size: indentConfig.size, preserve_newlines: true}); }
+        else if (ext === "css") { fmt = css_beautify(fmt, {indent_size: indentConfig.size, preserve_newlines: true}); }
+        else { showToast("Formatter not available for this language."); return; }
+
+        if(fmt !== editor.getValue()) { editor.setValue(fmt); showToast("Code formatted."); }
+        else { showToast("Code is already clean."); }
+    };
+
+    // --- WHITESPACE TOOLS ---
+    let isWhitespaceVisible = false;
+    const whitespaceOverlay = { token: function(stream) { if (stream.eatWhile(/ /)) return "space"; stream.next(); return null; } };
+
+    document.getElementById("whitespace-btn").onclick = () => {
+        isWhitespaceVisible = !isWhitespaceVisible;
+        if (isWhitespaceVisible) { editor.addOverlay(whitespaceOverlay); editor.getWrapperElement().classList.add("show-whitespaces"); }
+        else { editor.removeOverlay(whitespaceOverlay); editor.getWrapperElement().classList.remove("show-whitespaces"); }
+    };
+
+    document.getElementById("trim-btn").onclick = () => {
+        editor.operation(() => {
+            const lc = editor.lineCount(); let count = 0;
+            for (let i = 0; i < lc; i++) {
+                const text = editor.getLine(i); const match = text.match(/[ \t]+$/);
+                if (match) { editor.replaceRange("", { line: i, ch: text.length - match[0].length }, { line: i, ch: text.length }); count++; }
+            }
+            if (count > 0) showToast(`Trimmed trailing whitespace from ${count} line(s).`);
+            else showToast("No trailing whitespace found.");
+        });
+    };
+
+    // --- INSTRUCTIONS PANE ---
+    document.getElementById("instructions-btn").onclick = () => { document.getElementById("instructions-pane").style.display = "block"; };
+    document.getElementById("close-instructions-btn").onclick = () => { document.getElementById("instructions-pane").style.display = "none"; };
+
+
+    // --- FIND AND REPLACE LOGIC ---
+    const searchBox = document.getElementById("search-box");
+    const searchInput = document.getElementById("search-input");
+    const matchCaseCb = document.getElementById("match-case-cb");
+    const searchStats = document.getElementById("search-stats");
+    let searchCursor = null; let searchMarks = []; let allMatches = []; let searchScrollbarMarks = null;
+    let searchIsDirty = false;
+
+    function openSearch(cm) {
+      searchBox.style.display = "flex"; searchIsDirty = false;
+      const selection = cm.getSelection();
+      if (selection && !selection.includes('\n')) searchInput.value = selection;
+      searchInput.focus(); searchInput.select();
+      doSearch(false, true);
+    }
 
     function closeSearch() {
-        searchBox.classList.remove('show');
-        searchInput.value = '';
-        inputEl.focus();
-        updateHighlighting(); // Clear highlights
+      searchBox.style.display = "none"; clearSearchMarks(); editor.focus();
+      if (searchScrollbarMarks) { searchScrollbarMarks.clear(); searchScrollbarMarks = null; }
     }
 
-    // 2. Perform safe highlighting with Match Case support
-    function performSearch() {
-        updateHighlighting(); // Reset base syntax highlighting
-        let query = searchInput.value;
-        let isMatchCase = searchMatchCase.checked;
-        
-        searchMatches = [];
-        currentMatchIndex = -1;
-        
-        if (query.length === 0) {
-            searchCount.innerText = "0/0";
-            return;
-        }
+    function clearSearchMarks() { searchMarks.forEach(m => m.clear()); searchMarks = []; allMatches = []; searchStats.textContent = "0/0"; }
 
-        let searchTarget = isMatchCase ? query : query.toLowerCase();
+    function highlightAllMatches(query, caseFold) {
+      clearSearchMarks(); if (!query) return;
+      let cursor = editor.getSearchCursor(query, CodeMirror.Pos(editor.firstLine(), 0), {caseFold: caseFold});
+      while (cursor.findNext()) {
+          searchMarks.push(editor.markText(cursor.from(), cursor.to(), {className: "search-highlight"}));
+          allMatches.push(cursor.from());
+      }
+      searchStats.textContent = `0/${allMatches.length}`;
+    }
 
-        // TreeWalker safely traverses ONLY text nodes
-        const walker = document.createTreeWalker(highlightEl, NodeFilter.SHOW_TEXT, null, false);
-        const nodes = [];
-        let node;
-        while (node = walker.nextNode()) nodes.push(node);
+    function doSearch(reverse = false, forceNew = false) {
+      const query = searchInput.value; const caseFold = !matchCaseCb.checked;
+      if (!query) { clearSearchMarks(); return; }
 
-        nodes.forEach(n => {
-            let text = n.nodeValue;
-            let evalText = isMatchCase ? text : text.toLowerCase();
-            let startIndex = 0;
-            let matchIndex;
+      if (forceNew || !searchCursor || searchCursor.query !== query || searchCursor.caseFold !== caseFold) {
+          highlightAllMatches(query, caseFold);
+          searchCursor = editor.getSearchCursor(query, editor.getCursor("from"), {caseFold: caseFold});
+          searchCursor.query = query; searchCursor.caseFold = caseFold;
+      }
 
-            while ((matchIndex = evalText.indexOf(searchTarget, startIndex)) > -1) {
-                let matchText = text.substring(matchIndex, matchIndex + query.length);
-                let beforeText = text.substring(0, matchIndex);
-                let afterText = text.substring(matchIndex + query.length);
+      let found = searchCursor.find(reverse);
+      if (!found) {
+          const resetPos = reverse ? CodeMirror.Pos(editor.lastLine()) : CodeMirror.Pos(editor.firstLine(), 0);
+          searchCursor = editor.getSearchCursor(query, resetPos, {caseFold: caseFold});
+          searchCursor.query = query; searchCursor.caseFold = caseFold;
+          found = searchCursor.find(reverse);
+      }
 
-                let wrapper = document.createElement('span');
-                wrapper.className = 'search-match';
-                wrapper.innerText = matchText;
+      if (found) {
+          editor.setSelection(searchCursor.from(), searchCursor.to());
+          editor.scrollIntoView({from: searchCursor.from(), to: searchCursor.to()}, 50);
+          const currentPos = searchCursor.from();
+          let index = allMatches.findIndex(p => p.line === currentPos.line && p.ch === currentPos.ch);
+          if (index !== -1) searchStats.textContent = `${index + 1}/${allMatches.length}`;
+      } else { searchStats.textContent = `0/0`; }
 
-                n.nodeValue = beforeText;
-                n.parentNode.insertBefore(wrapper, n.nextSibling);
-                
-                let afterNode = document.createTextNode(afterText);
-                n.parentNode.insertBefore(afterNode, wrapper.nextSibling);
+      if (searchScrollbarMarks) { searchScrollbarMarks.clear(); searchScrollbarMarks = null; }
+      if (query.length >= 2) { searchScrollbarMarks = editor.showMatchesOnScrollbar(query, caseFold, { className: "search-box-scrollbar-mark" }); }
+    }
 
-                searchMatches.push(wrapper);
+    searchInput.addEventListener("input", () => doSearch(false, true));
+    matchCaseCb.addEventListener("change", () => doSearch(false, true));
+    searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") { e.preventDefault(); doSearch(e.shiftKey, searchIsDirty); searchIsDirty = false; }
+        if (e.key === "Escape") closeSearch();
+    });
+    document.getElementById("search-next").onclick = () => { doSearch(false, searchIsDirty); searchIsDirty = false; };
+    document.getElementById("search-prev").onclick = () => { doSearch(true, searchIsDirty); searchIsDirty = false; };
+    document.getElementById("search-close").onclick = closeSearch;
 
-                // Move to the next chunk of text
-                n = afterNode;
-                text = afterText;
-                evalText = isMatchCase ? text : text.toLowerCase();
-                startIndex = 0; 
-            }
+    document.getElementById("replace-btn").onclick = () => {
+        const query = searchInput.value; const replaceText = document.getElementById("replace-input").value;
+        if (!query) return;
+        const selectedText = editor.getSelection(); const caseFold = !matchCaseCb.checked;
+        let isMatch = caseFold ? selectedText.toLowerCase() === query.toLowerCase() : selectedText === query;
+        if (isMatch) { editor.replaceSelection(replaceText); doSearch(false, true); }
+        else { doSearch(false); }
+    };
+
+    document.getElementById("replace-all-btn").onclick = () => {
+        const query = searchInput.value; const replaceText = document.getElementById("replace-input").value;
+        if (!query) return; const caseFold = !matchCaseCb.checked; let count = 0;
+        editor.operation(() => {
+            let cursor = editor.getSearchCursor(query, CodeMirror.Pos(editor.firstLine(), 0), { caseFold: caseFold });
+            while (cursor.findNext()) { cursor.replace(replaceText); count++; }
         });
+        if (count > 0) { showToast(`Replaced ${count} occurrence(s).`); doSearch(false, true); }
+        else { showToast("No matches found."); }
+    };
 
-        if (searchMatches.length > 0) {
-            currentMatchIndex = 0;
-            updateSearchScroll();
-        } else {
-            searchCount.innerText = "0/0";
-        }
+
+    // --- GUTTER BOOKMARKS ---
+    const bookmarkAnnotation = editor.annotateScrollbar("cm-bookmark-scrollbar-mark");
+    const bookmarkedLines = new Set();
+    function updateBookmarkScrollbar() {
+        let ranges = [];
+        bookmarkedLines.forEach(handle => {
+            let lineNo = editor.getLineNumber(handle);
+            if (lineNo === null) bookmarkedLines.delete(handle);
+            else ranges.push({ from: CodeMirror.Pos(lineNo, 0), to: CodeMirror.Pos(lineNo + 1, 0) });
+        });
+        ranges.sort((a, b) => a.from.line - b.from.line);
+        bookmarkAnnotation.update(ranges);
     }
-
-    // 3. Navigation Logic
-    function navigateSearch(reverse = false) {
-        if (searchMatches.length === 0) return;
-        if (reverse) {
-            currentMatchIndex = (currentMatchIndex - 1 + searchMatches.length) % searchMatches.length;
-        } else {
-            currentMatchIndex = (currentMatchIndex + 1) % searchMatches.length;
-        }
-        updateSearchScroll();
-    }
-
-    function updateSearchScroll() {
-        searchCount.innerText = `${currentMatchIndex + 1}/${searchMatches.length}`;
-        
-        // Update highlight colors
-        searchMatches.forEach(m => m.style.backgroundColor = 'rgba(255, 255, 0, 0.2)');
-        let activeMatch = searchMatches[currentMatchIndex];
-        activeMatch.style.backgroundColor = 'rgba(205, 205, 0, 0.5)'; // Orange for active
-
-        // Get current scroll and height metrics
-        const editorHeight = inputEl.clientHeight;
-        const currentScroll = inputEl.scrollTop;
-        const matchOffset = activeMatch.offsetTop;
-        
-        // Define the comfortable visible area (with an 80px buffer from the top and bottom)
-        const topBoundary = currentScroll + 80;
-        const bottomBoundary = currentScroll + editorHeight - 80;
-
-        // ONLY scroll if the match is outside the current visible area
-        if (matchOffset < topBoundary || matchOffset > bottomBoundary) {
-            // Subtract half the editor height to push the match to the middle
-            const centeredScrollPos = matchOffset - (editorHeight / 2); 
-            inputEl.scrollTop = centeredScrollPos > 0 ? centeredScrollPos : 0;
-        }
-    }
-
-
-    // Attach Event Listeners
-    searchInput.addEventListener('input', performSearch);
-    searchMatchCase.addEventListener('change', performSearch); // Re-run search if checkbox toggled
-    
-    searchNextBtn.addEventListener('click', () => navigateSearch(false));
-    searchPrevBtn.addEventListener('click', () => navigateSearch(true));
-
-    searchInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            navigateSearch(e.shiftKey); // Shift+Enter goes backwards
+    editor.on("gutterClick", (cm, line, gutter) => {
+        if (gutter === "CodeMirror-linenumbers") {
+            const lineHandle = cm.getLineHandle(line);
+            if (lineHandle.isGutterHighlighted) { cm.removeLineClass(line, "gutter", "cm-highlighted-gutter"); lineHandle.isGutterHighlighted = false; bookmarkedLines.delete(lineHandle); }
+            else { cm.addLineClass(line, "gutter", "cm-highlighted-gutter"); lineHandle.isGutterHighlighted = true; bookmarkedLines.add(lineHandle); }
+            updateBookmarkScrollbar();
         }
     });
 
-</script>
+
+    // --- AUTO-HIGHLIGHT SELECTION ---
+    let autoSelectionMarks = []; let autoScrollbarMarks = null; let highlightTimeout = null;
+    editor.on("cursorActivity", () => {
+        autoSelectionMarks.forEach(m => m.clear()); autoSelectionMarks = [];
+        if (autoScrollbarMarks) { autoScrollbarMarks.clear(); autoScrollbarMarks = null; }
+        clearTimeout(highlightTimeout);
+        highlightTimeout = setTimeout(() => {
+            const selectedText = editor.getSelection();
+            if (document.getElementById("search-box").style.display === "flex" && selectedText === searchInput.value) return;
+            if (selectedText.length >= 2 && !selectedText.includes('\n')) {
+                editor.operation(() => {
+                    let cursor = editor.getSearchCursor(selectedText, CodeMirror.Pos(editor.firstLine(), 0), {caseFold: false});
+                    while (cursor.findNext()) autoSelectionMarks.push(editor.markText(cursor.from(), cursor.to(), {className: "auto-highlight"}));
+                });
+                // Using the specific soft blue CSS class to prevent overlap with orange Find markers
+                autoScrollbarMarks = editor.showMatchesOnScrollbar(selectedText, false, {className: "auto-highlight-scrollbar-mark"});
+            }
+        }, 300);
+    });
+
+    // --- MINIMAP SYNC & TYPING ---
+    const slider = document.getElementById("minimap-slider");
+    function updateMinimapSlider() {
+        const info = editor.getScrollInfo(); const mapInfo = minimap.getScrollInfo();
+        if (info.height === 0) return;
+        let mapTop = mapInfo.height > mapInfo.clientHeight ? (info.top / (info.height - info.clientHeight)) * (mapInfo.height - mapInfo.clientHeight) : 0;
+        minimap.scrollTo(0, mapTop);
+        const yTop = minimap.charCoords({line: editor.lineAtHeight(info.top, "local"), ch: 0}, "local").top;
+        const yBot = minimap.charCoords({line: editor.lineAtHeight(info.top + info.clientHeight - 1, "local"), ch: 0}, "local").bottom;
+        slider.style.transform = `translateY(${yTop - mapTop}px)`; slider.style.height = `${yBot - yTop}px`;
+    }
+
+    let editorOnChangeTimeout = null;
+    editor.on("change", () => {
+        clearTimeout(editorOnChangeTimeout);
+        editorOnChangeTimeout = setTimeout(() => {
+          saveFiles(); updateDiffMarkers(editor.getValue());
+          if (bookmarkedLines.size > 0) updateBookmarkScrollbar();
+        }, 300);
+        searchIsDirty = true;
+    });
+
+    editor.on("scroll", updateMinimapSlider);
+    editor.on("viewportChange", updateMinimapSlider);
+
+    // Initial Load
+    if(files.length > 0) {
+        loadFile(activeFileId || files[0].id, true);
+    } else {
+        renderFileList();
+    }
+    setTimeout(updateMinimapSlider, 100);
+
+  </script>
 </body>
 </html>
