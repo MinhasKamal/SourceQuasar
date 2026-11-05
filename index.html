@@ -1,292 +1,872 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title>Multi-File Editor - Full Features (Final)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Draft</title>
 
-  <!-- CodeMirror Core & Themes -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- CodeMirror Addons CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/foldgutter.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/matchesonscrollbar.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/scroll/simplescrollbars.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/lint/lint.min.css">
 
   <style>
-    :root {
-      --bg-color: #272822; --sidebar-bg: #1e1e1e; --toolbar-bg: #1e1e1e;
-      --text-color: #fff; --border-color: #333; --item-hover: #333;
-    }
-    body.light-theme {
-      --bg-color: #e0e0e0; --sidebar-bg: #f5f5f5; --toolbar-bg: #f9f9f9;
-      --text-color: #333; --border-color: #ccc; --item-hover: #e0e0e0;
-    }
-
     body {
-      margin: 0; display: flex; height: 100vh; font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: var(--bg-color); color: var(--text-color); overflow: hidden;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      height: 100vh;
+      height: 100dvh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #272822;
+      overflow: hidden;
       transition: background-color 0.3s;
     }
 
-    /* Sidebar File Explorer */
+    /* --- SIDEBAR FILE EXPLORER --- */
     #sidebar {
-      width: 250px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color);
-      display: flex; flex-direction: column; flex-shrink: 0; z-index: 100;
+      width: 240px;
+      background-color: #1e1e1e;
+      border-right: 1px solid #333;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      z-index: 100;
+      transition: background-color 0.3s, border-color 0.3s;
     }
+    body.light-theme #sidebar {
+      background-color: #f5f5f5;
+      border-right-color: #ddd;
+    }
+
     #sidebar-header {
-      padding: 10px; background-color: var(--border-color); font-weight: bold;
-      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 15px;
+      background-color: #2d2d2d;
+      color: #ccc;
+      font-size: 13px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #444;
     }
-    .icon-btn { background: none; border: none; color: inherit; cursor: pointer; font-size: 14px; }
-    .icon-btn:hover { opacity: 0.7; }
+    body.light-theme #sidebar-header {
+      background-color: #e0e0e0;
+      color: #333;
+      border-bottom-color: #ccc;
+    }
 
-    #file-list { flex: 1; overflow-y: auto; }
+    .icon-btn {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .icon-btn:hover {
+      background-color: rgba(128, 128, 128, 0.2);
+    }
+
+    #file-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
     .file-item {
-      padding: 8px 15px; cursor: pointer; display: flex; justify-content: space-between;
-      font-size: 14px; color: var(--text-color); border-bottom: 1px solid var(--border-color);
+      padding: 8px 15px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #ccc;
+      border-bottom: 1px solid #2a2a2a;
+      gap: 8px;
     }
-    .file-item:hover { background-color: var(--item-hover); }
-    .file-item.active { background-color: #094771; color: #fff; border-left: 3px solid #007acc; }
-    .file-delete { display: none; color: #f85149; }
-    .file-item:hover .file-delete { display: block; }
+    .file-item:hover {
+      background-color: #333;
+      color: #fff;
+    }
+    .file-item.active {
+      background-color: #37373d;
+      color: #fff;
+      border-left: 3px solid #409050;
+    }
+    body.light-theme .file-item {
+      color: #333;
+      border-bottom-color: #e8e8e8;
+    }
+    body.light-theme .file-item:hover {
+      background-color: #e0e0e0;
+    }
+    body.light-theme .file-item.active {
+      background-color: #d4e8d4;
+      color: #111;
+      border-left: 3px solid #4CAF50;
+    }
 
-    /* Main Editor Area */
-    #main-area { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
+    .file-name-span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .file-actions {
+      display: none;
+      gap: 4px;
+    }
+    .file-item:hover .file-actions {
+      display: flex;
+    }
+    .file-delete:hover {
+      color: #ff6b6b;
+    }
 
-    /* Toolbar & Menus */
+    /* --- MAIN PANEL & TOOLBAR --- */
+    #main-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      position: relative;
+    }
+
     #toolbar {
-      background-color: var(--toolbar-bg); padding: 10px 15px; display: flex;
-      justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);
+      background-color: #1e1e1e;
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-bottom: 1px solid #333;
     }
-    #button-group { display: flex; gap: 8px; align-items: center; }
+    body.light-theme #toolbar {
+      background-color: #f5f5f5;
+      border-bottom: 1px solid #ddd;
+    }
 
-    .toolbar-btn {
-      background-color: #444; color: #fff; border: 1px solid #555; padding: 6px 10px;
-      cursor: pointer; border-radius: 4px; font-size: 13px; font-weight: bold;
+    #title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .toolbar-btn:hover { background-color: #555; }
-    body.light-theme .toolbar-btn { background-color: #ddd; color: #333; border-color: #bbb; }
-    body.light-theme .toolbar-btn:hover { background-color: #ccc; }
 
-    .toolbar-input {
-      width: 40px; background-color: #333; color: #ccc; border: 1px solid #444;
-      border-radius: 4px; padding: 4px; text-align: center; font-family: monospace; font-size: 13px; outline: none;
+    #title {
+      color: #409050;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 2px 4px;
     }
-    .toolbar-input:focus { border-color: #4CAF50; }
-    body.light-theme .toolbar-input { background-color: #fff; color: #333; border-color: #ccc; }
+
+    #current-file-label {
+      color: #ccc;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    body.light-theme #current-file-label {
+      color: #333;
+    }
 
     #lang-badge {
-        font-size: 11px; padding: 2px 6px; background-color: #007acc; color: white;
-        border-radius: 3px; margin-left: 10px; font-weight: bold;
-    }
-
-    /* Dropdown */
-    .menu-container { position: relative; }
-    .menu-dropdown {
-      display: none; position: absolute; top: 100%; right: 0; background-color: var(--sidebar-bg);
-      min-width: 220px; box-shadow: 0px 8px 16px rgba(0,0,0,0.5); z-index: 9000;
-      border: 1px solid var(--border-color); padding: 8px 0; flex-direction: column;
-    }
-    .menu-dropdown.show { display: flex; }
-    .menu-item {
-      background: none; color: var(--text-color); border: none; padding: 10px 20px;
-      text-align: left; cursor: pointer; font-size: 13px; width: 100%; display: flex; gap: 8px;
-    }
-    .menu-item:hover { background-color: var(--item-hover); }
-
-    /* Editor Container */
-    #editor-container { flex: 1; display: flex; position: relative; overflow: hidden; }
-    .CodeMirror { flex: 1; height: 100% !important; font-size: 15px; font-family: 'Courier New', Courier, monospace; }
-
-    /* Minimap */
-    #minimap-container { width: 100px; height: 100%; border-left: 1px solid var(--border-color); background: var(--sidebar-bg); position: relative; flex-shrink: 0; }
-    #minimap-container .CodeMirror { font-size: 3px !important; line-height: 4px !important; }
-    #minimap-slider {
-      position: absolute; top: 0; right: 0; width: 100%; background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.3); z-index: 20; pointer-events: none;
-    }
-
-    /* Search Box */
-    #search-box {
-      position: absolute; top: 10px; right: 120px; z-index: 100; background: var(--sidebar-bg);
-      padding: 6px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-      border: 1px solid var(--border-color); display: none; flex-direction: column; gap: 8px;
-    }
-    .search-row { display: flex; align-items: center; gap: 5px; }
-    .search-row input[type="text"] { padding: 5px 8px; border: 1px solid #555; border-radius: 4px; background: #333; color: #fff;}
-    body.light-theme .search-row input[type="text"] { background: #fff; color: #000; border-color: #ccc; }
-    .search-highlight { background-color: rgba(250, 250, 10, 0.3); }
-    .search-box-scrollbar-mark { background: rgba(200, 100, 0, 0.8); }
-
-    /* Auto-highlight */
-    .auto-highlight { background-color: rgba(255, 255, 255, 0.2); border-radius: 2px; }
-    body.light-theme .auto-highlight { background-color: rgba(0, 0, 0, 0.15); }
-    .auto-highlight-scrollbar-mark { background-color: rgba(100, 200, 255, 0.5); }
-
-    /* Custom Diff Gutter */
-    .diff-gutter { width: 8px !important; background: transparent; }
-    .diff-marker { width: 4px; height: 1.4em; margin-left: 2px; border-radius: 2px; }
-    .diff-added { background-color: #2ea043; }
-    .diff-modified { background-color: #3182ce; }
-    .diff-deleted {
-      width: 0; height: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent;
-      border-left: 6px solid #f85149; position: relative; top: -4px;
-    }
-
-    /* Gutter Bookmarks */
-    .cm-highlighted-gutter { background-color: #ee00ff !important; }
-    body.light-theme .cm-highlighted-gutter { background-color: #ff99ff !important; }
-    .CodeMirror-linenumbers { cursor: pointer; }
-    .cm-bookmark-scrollbar-mark { background-color: #ee00ff; height: 3px !important; opacity: 0.9; }
-    body.light-theme .cm-bookmark-scrollbar-mark { background-color: #ff99ff; }
-
-    /* Whitespace Visibility */
-    .show-whitespaces .cm-space { background-image: radial-gradient(circle at center, rgba(128, 128, 128, 0.3) 1px, transparent 1.5px); background-size: 1ch 100%; }
-    .show-whitespaces .cm-tab { position: relative; }
-    .show-whitespaces .cm-tab::before { content: "→"; position: absolute; left: 0; width: 100%; text-align: center; color: rgba(128, 128, 128, 0.3); pointer-events: none; }
-    .show-whitespaces .CodeMirror-line::after { content: "↵"; color: rgba(128, 128, 128, 0.3); padding-left: 2px; font-size: 0.9em; vertical-align: baseline; pointer-events: none; }
-    .cm-trailingspace { background-color: rgba(255, 0, 0, 0.1); }
-
-    /* Instructions Pane */
-    #instructions-pane {
-      display: none; position: absolute; top: 20px; bottom: 20px; left: 20px; right: 20px;
-      background-color: var(--sidebar-bg); color: var(--text-color); z-index: 2000; padding: 40px;
-      box-sizing: border-box; overflow-y: auto; border-radius: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-      border: 1px solid var(--border-color);
-    }
-    #close-instructions-btn { position: absolute; top: 20px; right: 25px; background: none; border: none; color: #888; font-size: 24px; cursor: pointer; }
-    #close-instructions-btn:hover { color: var(--text-color); }
-    .instructions-content h2 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-top:0; }
-    .instructions-content h3 { color: #4CAF50; margin-top: 30px; }
-    .instructions-content ul { line-height: 1.8; }
-    .instructions-content kbd { background-color: #333; border: 1px solid #555; border-radius: 4px; padding: 2px 6px; font-size: 12px; font-family: monospace; color: #fff; }
-    body.light-theme .instructions-content kbd { background-color: #f0f0f0; border-color: #ccc; color: #333; }
-
-    /* --- NATIVE UI SCROLLBARS (Sidebar, Instructions) --- */
-    ::-webkit-scrollbar { width: 10px; height: 10px; }
-    ::-webkit-scrollbar-track { background: var(--sidebar-bg); }
-    ::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; border: 2px solid var(--sidebar-bg); }
-    ::-webkit-scrollbar-thumb:hover { background: #777; }
-
-    body.light-theme ::-webkit-scrollbar-thumb { background: #bbb; }
-    body.light-theme ::-webkit-scrollbar-thumb:hover { background: #999; }
-
-    /* --- CODEMIRROR SIMPLE SCROLLBARS THEME FIX --- */
-    .CodeMirror-simplescroll-horizontal, .CodeMirror-simplescroll-vertical {
-      background: var(--sidebar-bg) !important;
-    }
-    .CodeMirror-simplescroll-scrollbar {
-      background: #555 !important;
+      font-size: 11px;
+      padding: 2px 6px;
+      background-color: #409050;
+      color: #fff;
       border-radius: 4px;
-      border: 1px solid var(--sidebar-bg);
+      font-weight: bold;
     }
-    .CodeMirror-simplescroll-scrollbar:hover { background: #777 !important; }
 
-    body.light-theme .CodeMirror-simplescroll-scrollbar { background: #bbb !important; }
-    body.light-theme .CodeMirror-simplescroll-scrollbar:hover { background: #999 !important; }
+    /* Buttons General Styling */
+    .toolbar-btn {
+      background-color: #444;
+      color: #fff;
+      border: 1px solid #555;
+      padding: 6px 10px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: bold;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .toolbar-btn:hover {
+      background-color: #555;
+      border-color: #777;
+    }
+    body.light-theme .toolbar-btn {
+      background-color: #e0e0e0;
+      color: #333;
+      border-color: #ccc;
+    }
+    body.light-theme .toolbar-btn:hover {
+      background-color: #d0d0d0;
+    }
 
+    #button-group {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 8px;
+      transition: background-color 0.3s;
+    }
 
-    /* Toast */
-    #toast-container { position: fixed; bottom: 20px; left: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;}
-    .toast { background-color: #333; color: #fff; padding: 10px 16px; border-radius: 4px; font-size: 13px; border-left: 4px solid #4CAF50; opacity: 0; transition: 0.3s;}
-    .toast.show { opacity: 1; }
-    body.light-theme .toast { background-color: #fff; color: #333; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    #indent-input {
+      margin-right: 0px;
+    }
+
+    /* --- TOOLBAR INPUT --- */
+    .toolbar-input {
+      width: 35px;
+      background-color: #333;
+      color: #ccc;
+      border: 1px solid #444;
+      border-radius: 4px;
+      padding: 4px;
+      text-align: center;
+      font-family: monospace;
+      font-size: 13px;
+      margin-right: 8px;
+      outline: none;
+    }
+    .toolbar-input:focus {
+      border-color: #4CAF50;
+    }
+    body.light-theme .toolbar-input {
+      background-color: #fff;
+      color: #333;
+      border-color: #ccc;
+    }
+
+    /* --- MENU BAR DROPDOWN --- */
+    .menu-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .menu-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: #2d2d2d;
+      min-width: 220px;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.5);
+      z-index: 9000;
+      border-radius: 4px;
+      margin-top: 8px;
+      border: 1px solid #444;
+      padding: 8px 0;
+      flex-direction: column;
+    }
+    .menu-dropdown.show {
+      display: flex;
+    }
+
+    .menu-item {
+      background: none;
+      color: #ccc;
+      border: none;
+      padding: 10px 20px;
+      text-align: left;
+      cursor: pointer;
+      font-family: sans-serif;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .menu-item i {
+      width: 16px;
+      text-align: center;
+    }
+    .menu-item:hover {
+      background-color: #444;
+      color: #fff;
+    }
+
+    .menu-separator {
+      height: 1px;
+      background-color: #444;
+      margin: 4px 0;
+      width: 100%;
+    }
+    body.light-theme .menu-separator {
+      background-color: #ddd;
+    }
+
+    .menu-row {
+      padding: 12px 20px 4px 20px;
+      display: flex;
+      align-items: center;
+      color: #ccc;
+    }
+
+    body.light-theme .menu-dropdown {
+      background-color: #f9f9f9;
+      border-color: #ccc;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.1);
+    }
+    body.light-theme .menu-item,
+    body.light-theme .menu-row {
+      color: #333;
+    }
+    body.light-theme .menu-item:hover {
+      background-color: #e0e0e0;
+    }
+
+    /* --- INSTRUCTIONS PANE --- */
+    #instructions-pane {
+      display: none;
+      position: absolute;
+      top: 20px;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      background-color: #1e1e1e;
+      color: #ccc;
+      z-index: 2000;
+      padding: 40px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      font-family: sans-serif;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      border: 1px solid #444;
+    }
+
+    #close-instructions-btn {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 24px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    #close-instructions-btn:hover {
+      color: #fff;
+    }
+
+    .instructions-content h2 {
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid #444;
+      padding-bottom: 10px;
+    }
+    .instructions-content h3 {
+      color: #4CAF50;
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+    .instructions-content ul {
+      line-height: 1.8;
+      padding-left: 20px;
+    }
+    .instructions-content kbd {
+      background-color: #333;
+      border: 1px solid #555;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 12px;
+      font-family: monospace;
+      box-shadow: 0 2px 0 #111;
+      color: #fff;
+    }
+
+    body.light-theme #instructions-pane {
+      background-color: #ffffff;
+      color: #333;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      border-color: #ccc;
+    }
+    body.light-theme .instructions-content h2 {
+      color: #111;
+      border-bottom-color: #ddd;
+    }
+    body.light-theme .instructions-content h3 {
+      color: #2e7d32;
+    }
+    body.light-theme #close-instructions-btn:hover {
+      color: #000;
+    }
+    body.light-theme .instructions-content kbd {
+      background-color: #f0f0f0;
+      border-color: #ccc;
+      box-shadow: 0 2px 0 #aaa;
+      color: #333;
+    }
+
+    /* --- EDITOR --- */
+    #editor-container {
+      flex: 1 !important;
+      overflow: hidden;
+      display: flex !important;
+      flex-direction: row !important;
+      position: relative;
+      min-width: 0;
+    }
+
+    .CodeMirror {
+      flex: 1;
+      height: 100% !important;
+      font-size: 15px;
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    /* --- CUSTOM SCROLLBAR STYLING (EXACT FROM ORIGINAL) --- */
+    .CodeMirror-simplescroll-horizontal {
+      height: 10px;
+    }
+    .CodeMirror-simplescroll-vertical {
+      width: 10px;
+    }
+    .CodeMirror-simplescroll-horizontal,
+    .CodeMirror-simplescroll-vertical,
+    .CodeMirror-scrollbar-filler {
+      background: rgba(0, 0, 0, 0.3) !important;
+    }
+    .CodeMirror-simplescroll-horizontal div,
+    .CodeMirror-simplescroll-vertical div {
+      background: #333 !important;
+      border-radius: 8px;
+    }
+    .CodeMirror-simplescroll-horizontal div:hover,
+    .CodeMirror-simplescroll-vertical div:hover {
+      background: #444 !important;
+    }
+
+    body.light-theme .CodeMirror-simplescroll-horizontal,
+    body.light-theme .CodeMirror-simplescroll-vertical,
+    body.light-theme .CodeMirror-scrollbar-filler {
+      background: rgba(200, 200, 200, 0.3) !important;
+    }
+    body.light-theme .CodeMirror-simplescroll-horizontal div,
+    body.light-theme .CodeMirror-simplescroll-vertical div {
+      background: #ccc !important;
+      border-radius: 8px;
+    }
+    body.light-theme .CodeMirror-simplescroll-horizontal div:hover,
+    body.light-theme .CodeMirror-simplescroll-vertical div:hover {
+      background: #aaa !important;
+    }
+
+    .CodeMirror-search-match {
+      background: rgba(100, 200, 0, 0.8);
+      border-top: none;
+      border-bottom: none;
+    }
+    .search-box-scrollbar-mark {
+      background: rgba(200, 100, 0, 0.8);
+      border-top: 1px solid orange;
+      border-bottom: 1px solid orange;
+    }
+
+    /* --- MINIMAP STYLING --- */
+    #minimap-container {
+      position: relative !important;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100%;
+      border-left: 1px solid #333;
+      background: #1e1e1e;
+      z-index: 10;
+      overflow: hidden;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+    body.light-theme #minimap-container {
+      background: #f9f9f9;
+      border-left: 1px solid #ddd;
+    }
+
+    #minimap-container .CodeMirror {
+      font-size: 3px !important;
+      line-height: 4px !important;
+      height: 100%;
+      background: transparent;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+
+    #minimap-container .CodeMirror,
+    #minimap-container .CodeMirror-scroll,
+    #minimap-container .CodeMirror-lines {
+      -webkit-user-select: none !important;
+      user-select: none !important;
+      cursor: pointer !important;
+    }
+
+    #minimap-slider {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      z-index: 20;
+      pointer-events: none;
+    }
+    body.light-theme #minimap-slider {
+      background: rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.2);
+    }
+
+    /* --- SEARCH BOX STYLING --- */
+    #search-box {
+      position: absolute;
+      top: 10px;
+      right: 120px;
+      z-index: 100;
+      background: #1e1e1e;
+      padding: 6px;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      border: 1px solid #444;
+      align-items: left;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .search-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .search-row input[type="text"] {
+      padding: 5px 8px;
+      border: 1px solid #555;
+      background: #2d2d2d;
+      color: #fff;
+      border-radius: 4px;
+      outline: none;
+      font-family: inherit;
+    }
+    .search-row input[type="text"]:focus {
+      border-color: #4CAF50;
+    }
+    .search-highlight {
+      background-color: rgba(250, 250, 10, 0.2);
+    }
+
+    #search-box #search-stats {
+      color: #aaa;
+      font-size: 12px;
+      margin: 0 4px;
+      white-space: nowrap;
+    }
+
+    #search-box #match-case {
+      color: #ddd;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-right: 4px;
+    }
+
+    body.light-theme #search-box {
+      background: #f5f5f5;
+      border-color: #ddd;
+    }
+    body.light-theme #search-input,
+    body.light-theme #replace-input {
+      background: #fff;
+      color: #333;
+      border-color: #ccc;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: inherit;
+    }
+
+    /* Auto-highlight selected text matches */
+    .auto-highlight {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+    }
+    body.light-theme .auto-highlight {
+      background-color: rgba(0, 0, 0, 0.15);
+    }
+
+    /* --- WHITESPACE VISIBILITY --- */
+    .show-whitespaces .cm-space {
+      background-image: radial-gradient(circle at center, rgba(128, 128, 128, 0.3) 1px, transparent 1.5px);
+      background-size: 1ch 100%;
+    }
+
+    .show-whitespaces .cm-tab {
+      position: relative;
+    }
+    .show-whitespaces .cm-tab::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      color: rgba(128, 128, 128, 0.3);
+      pointer-events: none;
+      line-height: inherit;
+    }
+
+    .show-whitespaces .CodeMirror-line::after {
+      content: "↵";
+      color: rgba(128, 128, 128, 0.3);
+      padding-left: 2px;
+      pointer-events: none;
+      line-height: 0;
+      font-size: 0.9em;
+      vertical-align: baseline;
+    }
+
+    /* --- TOAST NOTIFICATIONS --- */
+    #toast-container {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background-color: #333;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: sans-serif;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      border-left: 4px solid #4CAF50;
+      opacity: 0;
+      transform: translateY(15px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    body.light-theme .toast {
+      background-color: #fff;
+      color: #333;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .cm-trailingspace {
+      background-color: rgba(255, 0, 0, 0.1);
+    }
+
+    /* --- GUTTER NUMBER HIGHLIGHTING --- */
+    .cm-highlighted-gutter {
+      background-color: #ee00ff !important;
+    }
+    body.light-theme .cm-highlighted-gutter {
+      background-color: #ff99ff !important;
+    }
+
+    .CodeMirror-linenumbers {
+      cursor: pointer;
+    }
+
+    /* --- SCROLLBAR BOOKMARK MARKERS --- */
+    .cm-bookmark-scrollbar-mark {
+      background-color: #ee00ff;
+      height: 3px !important;
+      border-radius: 2px;
+      opacity: 0.9;
+    }
+    body.light-theme .cm-bookmark-scrollbar-mark {
+      background-color: #ff99ff;
+    }
+
+    /* --- MATCHING TAG UNDERLINE --- */
+    .CodeMirror-matchingtag {
+      background: transparent !important;
+      border-bottom: 1px solid #00eecc !important;
+    }
+    body.light-theme .CodeMirror-matchingtag {
+      border-bottom: 1px solid #00eecc !important;
+    }
+
+    /* --- MATCHING BRACKET UNDERLINE --- */
+    .CodeMirror-matchingbracket {
+      background: transparent !important;
+      color: inherit !important;
+      text-decoration: none !important;
+      border-bottom: 1px solid #00eecc !important;
+    }
+    body.light-theme .CodeMirror-matchingbracket {
+      text-decoration: none !important;
+      border-bottom: 1px solid #00eecc !important;
+    }
+
+    /* Red underline for broken/unmatched brackets */
+    .CodeMirror-nonmatchingbracket {
+      color: inherit !important;
+      text-decoration: none !important;
+      border-bottom: 1px solid #cc5500 !important;
+    }
+
+    /* Make room for the diff column */
+    .CodeMirror-gutters {
+      border-right: 1px solid #ddd;
+    }
+
+    /* Set the width of our custom diff gutter */
+    .diff-gutter {
+      width: 8px !important;
+      background: transparent;
+    }
+
+    /* The visual markers */
+    .diff-marker {
+      width: 4px;
+      height: 1.4em;
+      margin-left: 2px;
+      border-radius: 2px;
+    }
+
+    /* Green for added lines */
+    .diff-added {
+      background-color: #2ea043;
+    }
+
+    /* Blue for modified lines */
+    .diff-modified {
+      background-color: #3182ce;
+    }
+
+    /* Red triangle for deleted lines */
+    .diff-deleted {
+      width: 0;
+      height: 0;
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+      border-left: 6px solid #f85149;
+      position: relative;
+      top: -4px;
+      margin-left: 0px;
+      background-color: transparent;
+    }
   </style>
 </head>
+
 <body>
 
-  <!-- Sidebar -->
+  <!-- Sidebar File Explorer -->
   <div id="sidebar">
     <div id="sidebar-header">
-      <span>EXPLORER</span>
+      <span>FILES</span>
       <button class="icon-btn" id="new-file-btn" title="New File"><i class="fas fa-plus"></i></button>
     </div>
     <div id="file-list"></div>
   </div>
 
-  <!-- Main Area -->
-  <div id="main-area">
+  <!-- Main Editor Panel -->
+  <div id="main-panel">
     <div id="toolbar">
-      <div>
-        <span id="current-file-name" style="font-weight:bold;">No file open</span>
-        <span id="lang-badge">Plain Text</span>
+      <div id="title-group">
+        <div id="title" title="Multi-Language Web Editor">Code Draft</div>
+        <span id="current-file-label">index.html</span>
+        <span id="lang-badge">HTML</span>
       </div>
       <div id="button-group">
-        <span style="font-size: 13px; color: #ccc;">Indent:</span>
-        <input type="text" id="indent-input" class="toolbar-input" title="Type a number or 'tab'">
-
-        <button id="stage-btn" class="toolbar-btn" title="Stage Changes (Clear Gutter)"><i class="fas fa-check-double"></i></button>
+        <!-- Dropdown Menu Container -->
         <div class="menu-container">
-          <button id="menu-btn" class="toolbar-btn"><i class="fas fa-bars"></i></button>
           <div id="menu-dropdown" class="menu-dropdown">
             <button id="theme-btn" class="menu-item"><i class="fas fa-moon"></i> Toggle Theme</button>
-            <button id="wrap-btn" class="menu-item"><i class="fas fa-arrows-alt-h"></i> Toggle Word Wrap</button>
-            <button id="fold-btn" class="menu-item"><i class="fas fa-compress-arrows-alt"></i> Toggle Fold All</button>
+            <button id="wrap-btn" class="menu-item"><i class="fa-solid fa-arrows-left-right"></i> Toggle Word Wrap</button>
+            <button id="whitespace-btn" class="menu-item"><i class="fas fa-low-vision"></i> Toggle Show Whitespaces</button>
+            <button id="fold-btn" class="menu-item"><i class="fa-solid fa-up-right-and-down-left-from-center"></i> Toggle Fold All</button>
+            <div class="menu-separator"></div>
             <button id="minimap-btn" class="menu-item"><i class="fas fa-map"></i> Toggle Minimap</button>
-            <div style="height:1px; background:var(--border-color); margin:4px 0;"></div>
-            <button id="whitespace-btn" class="menu-item"><i class="fas fa-low-vision"></i> Toggle Whitespaces</button>
-            <button id="trim-btn" class="menu-item"><i class="fas fa-strikethrough"></i> Trim Whitespace</button>
+            <div class="menu-separator"></div>
+            <div class="menu-row">
+              <span class="toolbar-label" style="font-size: 13px; margin-right: 8px;">Indent Size:</span>
+              <input type="text" id="indent-input" class="toolbar-input" title="Type a number or 'tab'" style="width: 50px;" />
+            </div>
             <button id="format-btn" class="menu-item"><i class="fas fa-broom"></i> Format Code</button>
-            <div style="height:1px; background:var(--border-color); margin:4px 0;"></div>
+            <button id="trim-btn" class="menu-item"><i class="fas fa-strikethrough"></i> Trim Whitespace</button>
+            <div class="menu-separator"></div>
             <button id="instructions-btn" class="menu-item"><i class="fas fa-info-circle"></i> Instructions</button>
           </div>
         </div>
+        <button id="menu-btn" class="toolbar-btn" title="Open Menu"><i class="fas fa-bars"></i></button>
+        <button id="stage-btn" class="toolbar-btn" title="Clear Change Marks"><i class="fas fa-check-double"></i></button>
       </div>
     </div>
 
-    <!-- Instructions Modal -->
+    <!-- Instructions Pane -->
     <div id="instructions-pane">
       <button id="close-instructions-btn" title="Close"><i class="fas fa-times"></i></button>
       <div class="instructions-content">
         <h2><i class="fas fa-info-circle" style="margin-right: 8px;"></i> Instructions</h2>
-        <p>Welcome to the Full Multi-Language IDE! Create multiple files and your work is safely saved in local storage.</p>
+        <p>You can write, format, and manage multiple code files across C/C++, Python, Java, JavaScript, SQL, PHP, HTML, CSS, and more.</p>
+        <p>As there are no servers, your data is saved in the local storage and never leaves your device. So, it is private, safe, and free for all kinds of usage.</p>
 
         <h3><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h3>
         <ul>
           <li><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd> Smart Indent</li>
           <li><kbd>Ctrl</kbd> + <kbd>/</kbd> Toggle Comment</li>
           <li><kbd>Ctrl</kbd> + <kbd>F</kbd> Find / Search</li>
+          <li><kbd>Ctrl</kbd> + <kbd>S</kbd> Save Document</li>
           <li><kbd>Alt</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd> Move Line Up/Down</li>
-          <li><kbd>Alt</kbd> + <kbd>Drag</kbd> Column / Rectangular Selection</li>
+          <li><kbd>Ctrl</kbd> + <kbd>Z</kbd> / <kbd>Y</kbd> Undo / Redo</li>
+          <li><kbd>Ctrl</kbd> + <kbd>Click</kbd> Multi Cursor</li>
+          <li><kbd>Alt</kbd> + <kbd>Select</kbd> Vertical or Column Select and Edit</li>
         </ul>
 
         <h3><i class="fas fa-bolt"></i> Power Features</h3>
         <ul>
-          <li><strong>Smart Indentation:</strong> Auto-sniffs indent rules on load (Tabs vs Spaces, Size).</li>
-          <li><strong>Multi-Language:</strong> Auto-loads syntax highlighting based on file extension (.py, .js, .cpp).</li>
-          <li><strong>Super Linter:</strong> Extracts and lints JS and CSS embedded directly inside HTML files.</li>
-          <li><strong>Diff Gutter:</strong> Tracks un-staged edits natively.</li>
-          <li><strong>Minimap:</strong> Click to scroll, drags proportionately.</li>
-          <li><strong>Gutter Bookmarks:</strong> Click a line number to bookmark it and highlight it on the scrollbar.</li>
+          <li><strong>Smart Indentation:</strong> The editor automatically sniffs your code on load to detect indentation: 2-space, 4-space, or Tab. You can also override this.</li>
+          <li><strong>Code Beautifier:</strong> Click "Format Code" to clean up messy HTML, CSS, and JS structure following your preferred indentation.</li>
+          <li><strong>Multi-Language Highlighting & Linting:</strong> Dynamically detects file extensions and loads syntax modes and linters.</li>
+          <li><strong>Auto-Save:</strong> All files are silently saved to your browser's local storage as you type. They will be restored even after you restart your device.</li>
         </ul>
       </div>
     </div>
 
-    <!-- Search Box -->
-    <div id="search-box">
-      <div class="search-row">
-        <input type="text" id="search-input" placeholder="Find...">
-        <span id="search-stats" style="color:#aaa;font-size:12px;margin:0 5px;">0/0</span>
-        <label id="match-case" title="Match Case" style="display:flex;align-items:center;gap:4px;color:#aaa;font-size:12px;cursor:pointer;">
-          <input type="checkbox" id="match-case-cb"> <b>Aa</b>
-        </label>
-        <button id="search-prev" class="toolbar-btn"><i class="fas fa-chevron-up"></i></button>
-        <button id="search-next" class="toolbar-btn"><i class="fas fa-chevron-down"></i></button>
-        <button id="search-close" class="toolbar-btn"><i class="fas fa-times"></i></button>
-      </div>
-      <div class="search-row">
-        <input type="text" id="replace-input" placeholder="Replace...">
-        <button id="replace-btn" class="toolbar-btn">Replace</button>
-        <button id="replace-all-btn" class="toolbar-btn">All</button>
-      </div>
-    </div>
-
-    <!-- Editor -->
     <div id="editor-container">
+      <!-- Floating Search Box with Stats -->
+      <div id="search-box">
+        <div class="search-row">
+          <input type="text" id="search-input" placeholder="Find...">
+          <div style="flex:1"></div>
+          <span id="search-stats">0/0</span>
+          <label id="match-case" title="Match Case">
+            <input type="checkbox" id="match-case-cb">
+            <div style="color:#aaa; font-weight:bold;">Aa</div>
+          </label>
+          <button id="search-prev" class="toolbar-btn" title="Previous"><i class="fas fa-chevron-up"></i></button>
+          <button id="search-next" class="toolbar-btn" title="Next"><i class="fas fa-chevron-down"></i></button>
+          <button id="search-close" class="toolbar-btn" title="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="search-row">
+          <input type="text" id="replace-input" placeholder="Replace..." autocomplete="off">
+          <div style="flex:1"></div>
+          <button id="replace-btn" class="toolbar-btn">Replace</button>
+          <button id="replace-all-btn" class="toolbar-btn">Replace All</button>
+        </div>
+      </div>
+
       <textarea id="code-editor"></textarea>
+
       <div id="minimap-container">
         <textarea id="minimap-textarea"></textarea>
         <div id="minimap-slider"></div>
@@ -294,21 +874,47 @@
     </div>
   </div>
 
+  <!-- Toast Notification Container -->
   <div id="toast-container"></div>
 
-  <!-- Scripts -->
+  <!-- Core & Mode Loader -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
-
-  <!-- Addons for formatting -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.9/beautify-html.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.9/beautify.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.9/beautify-css.min.js"></script>
-
-  <!-- Syntax Dynamic Loader Module (CodeMirror auto-loader) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/mode/loadmode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/meta.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/css/css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js"></script>
 
-  <!-- Linter Libraries (Client-side) -->
+  <!-- Beautifiers -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.9/beautify.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.9/beautify-css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.9/beautify-html.min.js"></script>
+
+  <!-- Editor Addons -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/comment/comment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/searchcursor.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/selection/active-line.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/matchbrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closetag.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/matchtags.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/trailingspace.js"></script>
+
+  <!-- Folding Addons -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/foldcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/foldgutter.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/brace-fold.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/xml-fold.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/indent-fold.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/markdown-fold.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/comment-fold.js"></script>
+
+  <!-- Scrollbar, Diff & Lint Addons -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/scroll/annotatescrollbar.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/matchesonscrollbar.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/scroll/simplescrollbars.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/diff@5.2.0/dist/diff.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.6/jshint.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/htmlhint@1.9.2/dist/htmlhint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/csslint/1.0.5/csslint.min.js"></script>
@@ -317,100 +923,23 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/lint/html-lint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/lint/css-lint.min.js"></script>
 
-  <!-- Other Addons (Search, Fold, Match, Whitespace, Scroll, Comment) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/searchcursor.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/matchesonscrollbar.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/selection/active-line.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/matchbrackets.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closetag.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/trailingspace.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/foldcode.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/foldgutter.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/brace-fold.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/xml-fold.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/indent-fold.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/markdown-fold.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/comment-fold.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/scroll/annotatescrollbar.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/scroll/simplescrollbars.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/comment/comment.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/diff@5.2.0/dist/diff.min.js"></script>
-
   <script>
-    // Define base path for CodeMirror modes so it can auto-fetch syntax files dynamically
     CodeMirror.modeURL = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/%N/%N.min.js";
 
-    // --- UTILS ---
-    function showToast(msg) {
-      const tc = document.getElementById("toast-container");
-      const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
-      tc.appendChild(t); setTimeout(() => t.classList.add("show"), 10);
-      setTimeout(() => { t.classList.remove("show"); setTimeout(()=>t.remove(), 300); }, 3000);
-    }
-
-    // --- SUPER LINTER FOR HTMLMIXED (HTML + Inline JS + Inline CSS) ---
-    CodeMirror.registerHelper("lint", "htmlmixed", function(text, options, editor) {
-        var found = [];
-
-        // 1. Run HTML Linter
-        if (CodeMirror.helpers.lint.html) {
-            var htmlErrors = CodeMirror.helpers.lint.html(text, options, editor) || [];
-            found = found.concat(htmlErrors);
-        }
-
-        // 2. Extract and Lint Embedded JavaScript
-        var scriptRegex = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
-        var match;
-        while ((match = scriptRegex.exec(text)) !== null) {
-            var scriptCode = match[1];
-            var preMatch = text.substring(0, match.index + match[0].indexOf(match[1]));
-            var lineOffset = preMatch.split('\n').length - 1;
-
-            if (CodeMirror.helpers.lint.javascript) {
-                var jsErrors = CodeMirror.helpers.lint.javascript(scriptCode, options, editor) || [];
-                jsErrors.forEach(function(err) {
-                    found.push({
-                        from: CodeMirror.Pos(err.from.line + lineOffset, err.from.ch),
-                        to: CodeMirror.Pos(err.to.line + lineOffset, err.to.ch),
-                        message: "JS: " + err.message, severity: err.severity
-                    });
-                });
-            }
-        }
-
-        // 3. Extract and Lint Embedded CSS
-        var styleRegex = /<style\b[^>]*>([\s\S]*?)<\/style>/gi;
-        while ((match = styleRegex.exec(text)) !== null) {
-            var styleCode = match[1];
-            var preMatch = text.substring(0, match.index + match[0].indexOf(match[1]));
-            var lineOffset = preMatch.split('\n').length - 1;
-
-            if (CodeMirror.helpers.lint.css) {
-                var cssErrors = CodeMirror.helpers.lint.css(styleCode, options, editor) || [];
-                cssErrors.forEach(function(err) {
-                    found.push({
-                        from: CodeMirror.Pos(err.from.line + lineOffset, err.from.ch),
-                        to: CodeMirror.Pos(err.to.line + lineOffset, err.to.ch),
-                        message: "CSS: " + err.message, severity: err.severity
-                    });
-                });
-            }
-        }
-        return found;
-    });
-
-    // --- KEYBOARD SHORTCUTS ---
+    // --- CUSTOM KEYBOARD SHORTCUT LOGIC ---
     function moveLineUp(cm) {
-      const from = cm.getCursor("from").line; const to = cm.getCursor("to").line;
+      const from = cm.getCursor("from").line;
+      const to = cm.getCursor("to").line;
       if (from === 0) return;
       const lineAbove = cm.getLine(from - 1);
       const text = cm.getRange({line: from, ch: 0}, {line: to + 1, ch: 0});
       cm.replaceRange(text + lineAbove + "\n", {line: from - 1, ch: 0}, {line: to + 1, ch: 0});
       cm.setSelection({line: from - 1, ch: 0}, {line: to - 1, ch: null});
     }
+
     function moveLineDown(cm) {
-      const from = cm.getCursor("from").line; const to = cm.getCursor("to").line;
+      const from = cm.getCursor("from").line;
+      const to = cm.getCursor("to").line;
       if (to >= cm.lineCount() - 1) return;
       const lineBelow = cm.getLine(to + 1);
       const text = cm.getRange({line: from, ch: 0}, {line: to + 1, ch: 0});
@@ -418,445 +947,974 @@
       cm.setSelection({line: from + 1, ch: 0}, {line: to + 1, ch: null});
     }
 
-    // --- SYSTEM STATE & LOCALSTORAGE ---
-    let files = JSON.parse(localStorage.getItem("WebEditor_Files")) || [
-      { id: Date.now(), name: "main.py", content: "def hello_world():\n    print('Hello World')\n" },
-      { id: Date.now()+1, name: "index.html", content: "<html>\n<head>\n  <style>\n    body { color: red; }\n  </style>\n</head>\n<body>\n  <h1>Hi</h1>\n  <script>\n    console.log('Testing JS in HTML');\n  <\/script>\n</body>\n</html>" }
-    ];
-    let activeFileId = parseInt(localStorage.getItem("WebEditor_ActiveFile")) || files[0].id;
-    let baselineText = "";
-    let indentConfig = { useTabs: false, size: 4 };
+    // --- MENU BAR LOGIC ---
+    const menuBtn = document.getElementById("menu-btn");
+    const menuDropdown = document.getElementById("menu-dropdown");
 
-    // --- INIT MAIN EDITOR ---
+    menuBtn.addEventListener("click", (e) => {
+      menuDropdown.classList.toggle("show");
+      e.stopPropagation();
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!menuDropdown.contains(e.target) && e.target !== menuBtn) {
+        menuDropdown.classList.remove("show");
+      }
+    });
+
+    // --- INSTRUCTIONS PANE LOGIC ---
+    const instructionsBtn = document.getElementById("instructions-btn");
+    const instructionsPane = document.getElementById("instructions-pane");
+    const closeInstructionsBtn = document.getElementById("close-instructions-btn");
+
+    instructionsBtn.addEventListener("click", () => {
+      instructionsPane.style.display = "block";
+      menuDropdown.classList.remove("show");
+    });
+
+    closeInstructionsBtn.addEventListener("click", () => {
+      instructionsPane.style.display = "none";
+    });
+
+    // --- TOAST NOTIFICATION UTILITY ---
+    function showToast(message) {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.textContent = message;
+
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.add("show");
+      });
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 300);
+      }, 5000);
+    }
+
+    // --- MULTI-FILE STATE & LOCAL STORAGE ---
+    const defaultHTML = `<div class="container">
+  <h2>Hello, world!</h2>
+  <p>You can write, format, and manage your code files here.</p>
+</div>
+
+<style>
+  body { font-family: sans-serif; background-color: #FFFDDF; }
+  .container { text-align: center; margin-top: 50px; }
+</style>
+
+<script>
+  console.log("Ready!");
+<\/script>`;
+
+    let files = JSON.parse(localStorage.getItem("CodeDraft_Files")) || [
+      { id: 1, name: "index.html", content: defaultHTML },
+      { id: 2, name: "main.py", content: "def greet(name):\n  print(f'Hello, {name}!')\n\ngreet('World')\n" },
+      { id: 3, name: "query.sql", content: "SELECT id, username, created_at\nFROM users\nWHERE active = 1;\n" }
+    ];
+    let activeFileId = parseInt(localStorage.getItem("CodeDraft_ActiveFile"), 10) || files[0].id;
+    let currentMode = "htmlmixed";
+
+    function storeInLocalMemory() {
+      try {
+        if (activeFileId) {
+          const activeFile = files.find(f => f.id === activeFileId);
+          if (activeFile) activeFile.content = editor.getValue();
+        }
+        localStorage.setItem("CodeDraft_Files", JSON.stringify(files));
+        localStorage.setItem("CodeDraft_ActiveFile", activeFileId);
+      } catch (e) {
+        console.warn("Cannot save to LocalStorage!");
+        return false;
+      }
+      return true;
+    }
+
+    function triggerManualSave(cm) {
+      if (storeInLocalMemory()) {
+        showToast("Code is automatically saved to local memory.");
+      } else {
+        showToast("Cannot save to LocalStorage!");
+      }
+    }
+
+    // --- SMART INDENT SNIFFING (EXACT FROM ORIGINAL) ---
+    function detectIndent(code) {
+      const lines = code.split('\n', 500);
+      let minSpaces = Infinity;
+      let usesTabs = false;
+
+      for (let line of lines) {
+        if (line.match(/^\t/)) {
+          usesTabs = true;
+          break;
+        }
+        const match = line.match(/^(\s+)\S/);
+        if (match) {
+          const spaces = match[1].length;
+          if (spaces > 0 && spaces < minSpaces) {
+            minSpaces = spaces;
+          }
+        }
+      }
+
+      if (usesTabs) return { useTabs: true, size: 4 };
+      if (minSpaces === 4) return { useTabs: false, size: 4 };
+      return { useTabs: false, size: 2 };
+    }
+
+    let indentConfig = detectIndent(files[0].content);
+    const indentInput = document.getElementById("indent-input");
+    indentInput.value = indentConfig.useTabs ? "tab" : indentConfig.size;
+
+    indentInput.addEventListener("change", (e) => {
+      const val = e.target.value.trim().toLowerCase();
+      if (val === "tab" || val === "tabs") {
+        indentConfig.useTabs = true;
+        indentConfig.size = 4;
+      } else {
+        const parsed = parseInt(val, 10);
+        if (!isNaN(parsed) && parsed > 0) {
+          indentConfig.useTabs = false;
+          indentConfig.size = parsed;
+        } else {
+          indentInput.value = indentConfig.useTabs ? "tab" : indentConfig.size;
+          showToast("Invalid indent size.");
+          return;
+        }
+      }
+
+      editor.setOption("indentUnit", indentConfig.size);
+      editor.setOption("tabSize", indentConfig.size);
+      editor.setOption("indentWithTabs", indentConfig.useTabs);
+
+      showToast(`Indentation updated to ${indentConfig.useTabs ? 'Tabs' : indentConfig.size + ' spaces'}`);
+    });
+
+    // --- SUPER LINTER ENGINE (EXACT FROM ORIGINAL + MULTI-LANGUAGE ROUTING) ---
+    function lintCodeRouter(text, options, cm) {
+      if (currentMode === "htmlmixed") {
+        let found = [];
+
+        if (CodeMirror.lint.html) {
+          let htmlErrors = CodeMirror.lint.html(text, {}, cm);
+          if (htmlErrors) found = found.concat(htmlErrors);
+        }
+
+        function lintEmbedded(regex, lintFn, cleanOptions = {}) {
+          let match;
+          while ((match = regex.exec(text)) !== null) {
+            let code = match[1];
+            if (!code.trim()) continue;
+
+            let codeStartIndex = match.index + match[0].indexOf(code);
+            let lineOffset = cm.posFromIndex(codeStartIndex).line;
+
+            let errors = lintFn(code, cleanOptions, cm);
+            if (errors) {
+              errors.forEach(err => {
+                err.from.line += lineOffset;
+                err.to.line += lineOffset;
+                found.push(err);
+              });
+            }
+          }
+        }
+
+        if (CodeMirror.lint.javascript) {
+          lintEmbedded(/<script\b[^>]*>([\s\S]*?)<\/script>/gi, CodeMirror.lint.javascript, { esversion: 8 });
+        }
+
+        if (CodeMirror.lint.css) {
+          lintEmbedded(/<style\b[^>]*>([\s\S]*?)<\/style>/gi, CodeMirror.lint.css, {});
+        }
+
+        return found;
+      } else if (currentMode === "javascript" && CodeMirror.lint.javascript) {
+        return CodeMirror.lint.javascript(text, { esversion: 8 }, cm) || [];
+      } else if (currentMode === "css" && CodeMirror.lint.css) {
+        return CodeMirror.lint.css(text, {}, cm) || [];
+      } else if (currentMode === "xml" && CodeMirror.lint.html) {
+        return CodeMirror.lint.html(text, {}, cm) || [];
+      }
+      return [];
+    }
+
+    // --- INIT EDITOR ---
     const editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
-      mode: "null", theme: "monokai", lineNumbers: true, lineWrapping: false,
-      styleActiveLine: true, matchBrackets: true, autoCloseBrackets: true, autoCloseTags: true, foldGutter: true,
-      showTrailingSpace: true, scrollbarStyle: "simple",
-      gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers", "diff-gutter", "CodeMirror-foldgutter"],
-      lint: true,
+      mode: "htmlmixed",
+      theme: "monokai",
+      lineNumbers: true,
+      lineWrapping: false,
+      indentUnit: indentConfig.size,
+      tabSize: indentConfig.size,
+      indentWithTabs: indentConfig.useTabs,
+
+      styleActiveLine: true,
+      matchBrackets: true,
+      autoCloseBrackets: true,
+      autoCloseTags: true,
+      foldGutter: true,
+      lint: {
+        getAnnotations: lintCodeRouter,
+        async: false
+      },
+      gutters: [
+        "CodeMirror-linenumbers",
+        "CodeMirror-lint-markers",
+        "diff-gutter",
+        "CodeMirror-foldgutter"
+      ],
+      matchTags: {bothTags: true},
+      showTrailingSpace: true,
+      scrollbarStyle: "simple",
+
       extraKeys: {
         "Tab": function(cm) {
-          if (cm.somethingSelected()) { cm.indentSelection("add"); }
-          else { cm.replaceSelection(indentConfig.useTabs ? "\t" : " ".repeat(indentConfig.size)); }
+          if (cm.somethingSelected()) {
+            cm.indentSelection("add");
+          } else {
+            cm.replaceSelection(indentConfig.useTabs ? "\t" : " ".repeat(indentConfig.size));
+          }
         },
-        "Shift-Tab": function(cm) { cm.indentSelection("subtract"); },
-        "Ctrl-/": "toggleComment", "Cmd-/": "toggleComment",
-        "Ctrl-F": openSearch, "Cmd-F": openSearch,
-        "Alt-Up": moveLineUp, "Alt-Down": moveLineDown
+        "Shift-Tab": function(cm) {
+          cm.indentSelection("subtract");
+        },
+        "Ctrl-/": "toggleComment",
+        "Cmd-/": "toggleComment",
+        "Ctrl-S": triggerManualSave,
+        "Cmd-S": triggerManualSave,
+        "Ctrl-F": openSearch,
+        "Cmd-F": openSearch,
+        "Alt-Up": moveLineUp,
+        "Alt-Down": moveLineDown
       }
     });
 
-    // --- INIT MINIMAP ---
-    const minimap = CodeMirror.fromTextArea(document.getElementById("minimap-textarea"), {
-        mode: "null", theme: "monokai", readOnly: "nocursor", lineNumbers: false, scrollbarStyle: "null"
-    });
-    minimap.swapDoc(editor.getDoc().linkedDoc({sharedHist: false}));
-
-    // --- SMART INDENT SNIFFING ---
-    function detectIndent(code) {
-        const lines = code.split('\n', 500);
-        let minSpaces = Infinity; let usesTabs = false;
-        for (let line of lines) {
-            if (line.match(/^\t/)) { usesTabs = true; break; }
-            const match = line.match(/^(\s+)\S/);
-            if (match) {
-                const spaces = match[1].length;
-                if (spaces > 0 && spaces < minSpaces) minSpaces = spaces;
-            }
-        }
-        if (usesTabs) return { useTabs: true, size: 4 };
-        if (minSpaces === 2) return { useTabs: false, size: 2 };
-        return { useTabs: false, size: 4 };
-    }
-
-    const indentInput = document.getElementById("indent-input");
-    indentInput.addEventListener("change", (e) => {
-        const val = e.target.value.trim().toLowerCase();
-        if (val === "tab" || val === "tabs") { indentConfig.useTabs = true; indentConfig.size = 4; }
-        else {
-            const parsed = parseInt(val, 10);
-            if (!isNaN(parsed) && parsed > 0) { indentConfig.useTabs = false; indentConfig.size = parsed; }
-            else { indentInput.value = indentConfig.useTabs ? "tab" : indentConfig.size; showToast("Invalid indent size."); return; }
-        }
-        editor.setOption("indentUnit", indentConfig.size);
-        editor.setOption("tabSize", indentConfig.size);
-        editor.setOption("indentWithTabs", indentConfig.useTabs);
-        showToast(`Indentation set to ${indentConfig.useTabs ? 'Tabs' : indentConfig.size + ' spaces'}`);
-    });
-
-    // --- DIFF GUTTER ---
-    function updateDiffMarkers(text) {
-        if(text === baselineText) { editor.clearGutter("diff-gutter"); return; }
-        const diffs = Diff.diffLines(baselineText, text);
-        editor.operation(() => {
-            editor.clearGutter("diff-gutter");
-            let idx = 0;
-            for(let i=0; i<diffs.length; i++) {
-                const part = diffs[i];
-
-                // Detect Modification: A removal immediately followed by an addition
-                if (part.removed && i < diffs.length - 1 && diffs[i+1].added) {
-                    const nextPart = diffs[i+1];
-                    for(let j=0; j<nextPart.count; j++) {
-                        let m = document.createElement("div");
-                        m.className = "diff-marker diff-modified"; // Blue
-                        editor.setGutterMarker(idx+j, "diff-gutter", m);
-                    }
-                    idx += nextPart.count;
-                    i++; // Skip the next 'added' part since we just handled it
-                }
-                // Detect Pure Addition
-                else if (part.added) {
-                    for(let j=0; j<part.count; j++) {
-                        let m = document.createElement("div");
-                        m.className = "diff-marker diff-added"; // Green
-                        editor.setGutterMarker(idx+j, "diff-gutter", m);
-                    }
-                    idx += part.count;
-                }
-                // Detect Pure Deletion
-                else if (part.removed) {
-                    let m = document.createElement("div");
-                    m.className = "diff-marker diff-deleted"; // Red Triangle
-                    editor.setGutterMarker(Math.min(idx, editor.lineCount()-1), "diff-gutter", m);
-                }
-                // Unchanged lines
-                else {
-                    idx += part.count;
-                }
-            }
-        });
-    }
-
-
-    // --- DYNAMIC LANGUAGE & LINTING LOADER ---
-    function setEditorModeAndLinting(filename) {
-        let val = filename.toLowerCase(); let m, mode, spec;
-        if (m = /.+\.([^.]+)$/.exec(val)) {
-            let info = CodeMirror.findModeByExtension(m[1]);
-            if (info) { mode = info.mode; spec = info.mime; document.getElementById("lang-badge").innerText = info.name; }
-            else { mode = "null"; spec = "null"; document.getElementById("lang-badge").innerText = "Plain Text"; }
-        } else { mode = "null"; spec = "null"; document.getElementById("lang-badge").innerText = "Plain Text"; }
-
-        if (mode !== "null") {
-            CodeMirror.requireMode(mode, () => {
-                editor.setOption("mode", spec); minimap.setOption("mode", spec);
-            });
-        } else {
-            editor.setOption("mode", "null"); minimap.setOption("mode", "null");
-        }
-
-        if (mode === "javascript" || mode === "css" || mode === "htmlmixed") { editor.setOption("lint", true); }
-        else { editor.setOption("lint", false); }
-    }
-
-    // --- FILE MANAGEMENT ---
-    function saveFiles() {
-      if(activeFileId) { let f = files.find(f => f.id === activeFileId); if(f) f.content = editor.getValue(); }
-      localStorage.setItem("WebEditor_Files", JSON.stringify(files));
-      localStorage.setItem("WebEditor_ActiveFile", activeFileId);
-    }
-
-    function renderFileList() {
-      const list = document.getElementById("file-list"); list.innerHTML = '';
-      files.forEach(f => {
-        let d = document.createElement("div"); d.className = "file-item" + (f.id===activeFileId?" active":"");
-        let ext = f.name.split('.').pop().toLowerCase();
-        let icon = "fa-file-code";
-        if(ext === "py") icon = "fa-brands fa-python";
-        else if(ext === "js") icon = "fa-brands fa-js";
-        else if(ext === "html") icon = "fa-brands fa-html5";
-        else if(ext === "css") icon = "fa-brands fa-css3-alt";
-        else if(ext === "java") icon = "fa-brands fa-java";
-        else if(ext === "php") icon = "fa-brands fa-php";
-        else if(ext === "txt") icon = "fa-file-lines";
-
-        d.innerHTML = `<span><i class="fas ${icon}"></i> ${f.name}</span> <button class="icon-btn file-delete" onclick="deleteFile(${f.id}, event)"><i class="fas fa-trash"></i></button>`;
-        d.onclick = () => loadFile(f.id); list.appendChild(d);
-      });
-    }
-
-    function loadFile(id, isInitialLoad = false) {
-      if (!isInitialLoad) {
-          saveFiles(); // Only save if we are actually switching files!
-      }
-      activeFileId = id;
-      let f = files.find(f => f.id === id);
-      if(f) {
-        editor.setValue(f.content);
-        document.getElementById("current-file-name").textContent = f.name;
-        baselineText = f.content;
-        updateDiffMarkers(f.content);
-        setEditorModeAndLinting(f.name);
-
-        // Re-sniff indent
-        indentConfig = detectIndent(f.content);
-        indentInput.value = indentConfig.useTabs ? "tab" : indentConfig.size;
-        editor.setOption("indentUnit", indentConfig.size);
-        editor.setOption("tabSize", indentConfig.size);
-        editor.setOption("indentWithTabs", indentConfig.useTabs);
-      }
-      renderFileList();
-      clearSearchMarks();
-    }
-
-
-    window.deleteFile = function(id, e) {
-      e.stopPropagation(); files = files.filter(f => f.id !== id);
-      if(activeFileId === id) {
-        activeFileId = files.length ? files[0].id : null;
-        if(activeFileId) loadFile(activeFileId); else { editor.setValue(''); document.getElementById("current-file-name").textContent = "No file open"; }
-      }
-      saveFiles(); renderFileList();
-    }
-
-    document.getElementById("new-file-btn").onclick = () => {
-      let n = prompt("File name:", "script.js");
-      if(n) { let nf = { id: Date.now(), name: n, content: "" }; files.push(nf); loadFile(nf.id); }
-    };
-
-    document.getElementById("stage-btn").onclick = () => {
-        baselineText = editor.getValue(); editor.clearGutter("diff-gutter"); showToast("Changes staged.");
-    };
-
-    // --- UI TOGGLES ---
-    const menuDropdown = document.getElementById("menu-dropdown");
-    document.getElementById("menu-btn").onclick = (e) => { menuDropdown.classList.toggle("show"); e.stopPropagation(); };
-    document.addEventListener("click", () => menuDropdown.classList.remove("show"));
-
-    document.getElementById("theme-btn").onclick = () => document.body.classList.toggle("light-theme");
-
-    let isWrapped = false;
-    document.getElementById("wrap-btn").onclick = () => {
-        isWrapped = !isWrapped; editor.setOption("lineWrapping", isWrapped); minimap.setOption("lineWrapping", isWrapped);
-    };
-
-    let isMinimap = true;
-    document.getElementById("minimap-btn").onclick = () => {
-        isMinimap = !isMinimap; document.getElementById("minimap-container").style.display = isMinimap ? "block" : "none";
-    };
-
-    // --- FOLD ALL ---
-    let isAllFolded = false;
-    document.getElementById("fold-btn").onclick = () => {
-        isAllFolded = !isAllFolded;
-        const action = isAllFolded ? "fold" : "unfold";
-        editor.operation(() => {
-            for (let i = 0; i < editor.lineCount(); i++) editor.foldCode(CodeMirror.Pos(i, 0), null, action);
-        });
-    };
-
-    // --- FORMAT CODE ---
-    document.getElementById("format-btn").onclick = () => {
-        let f = files.find(f => f.id === activeFileId); if(!f) return;
-        let ext = f.name.split('.').pop().toLowerCase();
-        let fmt = editor.getValue();
-        if (ext === "html") { fmt = html_beautify(fmt, {indent_size: indentConfig.size, preserve_newlines: true}); }
-        else if (ext === "js" || ext === "json") { fmt = js_beautify(fmt, {indent_size: indentConfig.size, preserve_newlines: true}); }
-        else if (ext === "css") { fmt = css_beautify(fmt, {indent_size: indentConfig.size, preserve_newlines: true}); }
-        else { showToast("Formatter not available for this language."); return; }
-
-        if(fmt !== editor.getValue()) { editor.setValue(fmt); showToast("Code formatted."); }
-        else { showToast("Code is already clean."); }
-    };
-
-    // --- WHITESPACE TOOLS ---
-    let isWhitespaceVisible = false;
-    const whitespaceOverlay = { token: function(stream) { if (stream.eatWhile(/ /)) return "space"; stream.next(); return null; } };
-
-    document.getElementById("whitespace-btn").onclick = () => {
-        isWhitespaceVisible = !isWhitespaceVisible;
-        if (isWhitespaceVisible) { editor.addOverlay(whitespaceOverlay); editor.getWrapperElement().classList.add("show-whitespaces"); }
-        else { editor.removeOverlay(whitespaceOverlay); editor.getWrapperElement().classList.remove("show-whitespaces"); }
-    };
-
-    document.getElementById("trim-btn").onclick = () => {
-        editor.operation(() => {
-            const lc = editor.lineCount(); let count = 0;
-            for (let i = 0; i < lc; i++) {
-                const text = editor.getLine(i); const match = text.match(/[ \t]+$/);
-                if (match) { editor.replaceRange("", { line: i, ch: text.length - match[0].length }, { line: i, ch: text.length }); count++; }
-            }
-            if (count > 0) showToast(`Trimmed trailing whitespace from ${count} line(s).`);
-            else showToast("No trailing whitespace found.");
-        });
-    };
-
-    // --- INSTRUCTIONS PANE ---
-    document.getElementById("instructions-btn").onclick = () => { document.getElementById("instructions-pane").style.display = "block"; };
-    document.getElementById("close-instructions-btn").onclick = () => { document.getElementById("instructions-pane").style.display = "none"; };
-
-
-    // --- FIND AND REPLACE LOGIC ---
+    // --- SEARCH, HIGHLIGHT & STATS LOGIC (EXACT FROM ORIGINAL) ---
     const searchBox = document.getElementById("search-box");
     const searchInput = document.getElementById("search-input");
     const matchCaseCb = document.getElementById("match-case-cb");
     const searchStats = document.getElementById("search-stats");
-    let searchCursor = null; let searchMarks = []; let allMatches = []; let searchScrollbarMarks = null;
+
+    let searchCursor = null;
+    let searchMarks = [];
+    let allMatches = [];
+    let searchScrollbarMarks = null;
     let searchIsDirty = false;
 
+    function clearSearchMarks() {
+      searchMarks.forEach(m => m.clear());
+      searchMarks = [];
+      allMatches = [];
+      searchStats.textContent = "";
+    }
+
+    function highlightAllMatches(query, caseFold) {
+      clearSearchMarks();
+      if (!query) return;
+
+      let cursor = editor.getSearchCursor(query, CodeMirror.Pos(editor.firstLine(), 0), {caseFold: caseFold});
+      while (cursor.findNext()) {
+        searchMarks.push(editor.markText(cursor.from(), cursor.to(), {className: "search-highlight"}));
+        allMatches.push(cursor.from());
+      }
+      if (allMatches.length > 0) {
+        searchStats.textContent = `0/${allMatches.length}`;
+      } else {
+        searchStats.textContent = `0/0`;
+      }
+    }
+
     function openSearch(cm) {
-      searchBox.style.display = "flex"; searchIsDirty = false;
+      searchBox.style.display = "flex";
+      searchIsDirty = false;
+      searchInput.focus();
       const selection = cm.getSelection();
-      if (selection && !selection.includes('\n')) searchInput.value = selection;
-      searchInput.focus(); searchInput.select();
+      if (selection) {
+        searchInput.value = selection;
+      }
+      searchInput.select();
       doSearch(false, true);
     }
 
-    function closeSearch() {
-      searchBox.style.display = "none"; clearSearchMarks(); editor.focus();
-      if (searchScrollbarMarks) { searchScrollbarMarks.clear(); searchScrollbarMarks = null; }
-    }
-
-    function clearSearchMarks() { searchMarks.forEach(m => m.clear()); searchMarks = []; allMatches = []; searchStats.textContent = "0/0"; }
-
-    function highlightAllMatches(query, caseFold) {
-      clearSearchMarks(); if (!query) return;
-      let cursor = editor.getSearchCursor(query, CodeMirror.Pos(editor.firstLine(), 0), {caseFold: caseFold});
-      while (cursor.findNext()) {
-          searchMarks.push(editor.markText(cursor.from(), cursor.to(), {className: "search-highlight"}));
-          allMatches.push(cursor.from());
-      }
-      searchStats.textContent = `0/${allMatches.length}`;
-    }
-
     function doSearch(reverse = false, forceNew = false) {
-      const query = searchInput.value; const caseFold = !matchCaseCb.checked;
-      if (!query) { clearSearchMarks(); return; }
+      const query = searchInput.value;
+      const caseFold = !matchCaseCb.checked;
+
+      if (!query) {
+        clearSearchMarks();
+        return;
+      }
 
       if (forceNew || !searchCursor || searchCursor.query !== query || searchCursor.caseFold !== caseFold) {
-          highlightAllMatches(query, caseFold);
-          searchCursor = editor.getSearchCursor(query, editor.getCursor("from"), {caseFold: caseFold});
-          searchCursor.query = query; searchCursor.caseFold = caseFold;
+        highlightAllMatches(query, caseFold);
+        searchCursor = editor.getSearchCursor(query, editor.getCursor("from"), {caseFold: caseFold});
+        searchCursor.query = query;
+        searchCursor.caseFold = caseFold;
       }
 
       let found = searchCursor.find(reverse);
       if (!found) {
-          const resetPos = reverse ? CodeMirror.Pos(editor.lastLine()) : CodeMirror.Pos(editor.firstLine(), 0);
-          searchCursor = editor.getSearchCursor(query, resetPos, {caseFold: caseFold});
-          searchCursor.query = query; searchCursor.caseFold = caseFold;
-          found = searchCursor.find(reverse);
+        const resetPos = reverse ? CodeMirror.Pos(editor.lastLine()) : CodeMirror.Pos(editor.firstLine(), 0);
+        searchCursor = editor.getSearchCursor(query, resetPos, {caseFold: caseFold});
+        searchCursor.query = query;
+        searchCursor.caseFold = caseFold;
+        found = searchCursor.find(reverse);
       }
 
       if (found) {
-          editor.setSelection(searchCursor.from(), searchCursor.to());
-          editor.scrollIntoView({from: searchCursor.from(), to: searchCursor.to()}, 50);
-          const currentPos = searchCursor.from();
-          let index = allMatches.findIndex(p => p.line === currentPos.line && p.ch === currentPos.ch);
-          if (index !== -1) searchStats.textContent = `${index + 1}/${allMatches.length}`;
-      } else { searchStats.textContent = `0/0`; }
+        editor.setSelection(searchCursor.from(), searchCursor.to());
+        editor.scrollIntoView({from: searchCursor.from(), to: searchCursor.to()}, 50);
 
-      if (searchScrollbarMarks) { searchScrollbarMarks.clear(); searchScrollbarMarks = null; }
-      if (query.length >= 2) { searchScrollbarMarks = editor.showMatchesOnScrollbar(query, caseFold, { className: "search-box-scrollbar-mark" }); }
+        const currentPos = searchCursor.from();
+        let index = allMatches.findIndex(p => p.line === currentPos.line && p.ch === currentPos.ch);
+        if (index !== -1) {
+          searchStats.textContent = `${index + 1}/${allMatches.length}`;
+        }
+      } else {
+        searchStats.textContent = `0/0`;
+      }
+
+      if (searchScrollbarMarks) {
+        searchScrollbarMarks.clear();
+        searchScrollbarMarks = null;
+      }
+
+      if (query.length >= 2) {
+        searchScrollbarMarks = editor.showMatchesOnScrollbar(query, caseFold, { className: "search-box-scrollbar-mark" });
+      }
     }
 
     searchInput.addEventListener("input", () => doSearch(false, true));
     matchCaseCb.addEventListener("change", () => doSearch(false, true));
+
     searchInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") { e.preventDefault(); doSearch(e.shiftKey, searchIsDirty); searchIsDirty = false; }
-        if (e.key === "Escape") closeSearch();
+      if (e.key === "Enter") {
+        e.preventDefault();
+        doSearch(e.shiftKey, searchIsDirty);
+        searchIsDirty = false;
+      }
+      if (e.key === "Escape") closeSearch();
     });
-    document.getElementById("search-next").onclick = () => { doSearch(false, searchIsDirty); searchIsDirty = false; };
-    document.getElementById("search-prev").onclick = () => { doSearch(true, searchIsDirty); searchIsDirty = false; };
-    document.getElementById("search-close").onclick = closeSearch;
 
-    document.getElementById("replace-btn").onclick = () => {
-        const query = searchInput.value; const replaceText = document.getElementById("replace-input").value;
-        if (!query) return;
-        const selectedText = editor.getSelection(); const caseFold = !matchCaseCb.checked;
-        let isMatch = caseFold ? selectedText.toLowerCase() === query.toLowerCase() : selectedText === query;
-        if (isMatch) { editor.replaceSelection(replaceText); doSearch(false, true); }
-        else { doSearch(false); }
-    };
+    document.getElementById("search-next").addEventListener("click", () => {
+      doSearch(false, searchIsDirty);
+      searchIsDirty = false;
+    });
 
-    document.getElementById("replace-all-btn").onclick = () => {
-        const query = searchInput.value; const replaceText = document.getElementById("replace-input").value;
-        if (!query) return; const caseFold = !matchCaseCb.checked; let count = 0;
-        editor.operation(() => {
-            let cursor = editor.getSearchCursor(query, CodeMirror.Pos(editor.firstLine(), 0), { caseFold: caseFold });
-            while (cursor.findNext()) { cursor.replace(replaceText); count++; }
-        });
-        if (count > 0) { showToast(`Replaced ${count} occurrence(s).`); doSearch(false, true); }
-        else { showToast("No matches found."); }
-    };
+    document.getElementById("search-prev").addEventListener("click", () => {
+      doSearch(true, searchIsDirty);
+      searchIsDirty = false;
+    });
 
+    document.getElementById("search-close").addEventListener("click", closeSearch);
 
-    // --- GUTTER BOOKMARKS ---
-    const bookmarkAnnotation = editor.annotateScrollbar("cm-bookmark-scrollbar-mark");
-    const bookmarkedLines = new Set();
-    function updateBookmarkScrollbar() {
-        let ranges = [];
-        bookmarkedLines.forEach(handle => {
-            let lineNo = editor.getLineNumber(handle);
-            if (lineNo === null) bookmarkedLines.delete(handle);
-            else ranges.push({ from: CodeMirror.Pos(lineNo, 0), to: CodeMirror.Pos(lineNo + 1, 0) });
-        });
-        ranges.sort((a, b) => a.from.line - b.from.line);
-        bookmarkAnnotation.update(ranges);
+    function closeSearch() {
+      searchBox.style.display = "none";
+      clearSearchMarks();
+      editor.focus();
+
+      if (searchScrollbarMarks) {
+        searchScrollbarMarks.clear();
+        searchScrollbarMarks = null;
+      }
     }
-    editor.on("gutterClick", (cm, line, gutter) => {
-        if (gutter === "CodeMirror-linenumbers") {
-            const lineHandle = cm.getLineHandle(line);
-            if (lineHandle.isGutterHighlighted) { cm.removeLineClass(line, "gutter", "cm-highlighted-gutter"); lineHandle.isGutterHighlighted = false; bookmarkedLines.delete(lineHandle); }
-            else { cm.addLineClass(line, "gutter", "cm-highlighted-gutter"); lineHandle.isGutterHighlighted = true; bookmarkedLines.add(lineHandle); }
-            updateBookmarkScrollbar();
+
+    document.getElementById("replace-btn").addEventListener("click", () => {
+      const query = searchInput.value;
+      const replaceInput = document.getElementById("replace-input");
+      const replaceText = replaceInput ? replaceInput.value : "";
+      if (!query) return;
+
+      const selectedText = editor.getSelection();
+      const caseFold = !matchCaseCb.checked;
+
+      let isMatch = false;
+      if (caseFold) {
+        isMatch = selectedText.toLowerCase() === query.toLowerCase();
+      } else {
+        isMatch = selectedText === query;
+      }
+
+      if (isMatch) {
+        editor.replaceSelection(replaceText);
+        doSearch(false, true);
+      } else {
+        doSearch(false);
+      }
+    });
+
+    document.getElementById("replace-all-btn").addEventListener("click", () => {
+      const query = searchInput.value;
+      const replaceInput = document.getElementById("replace-input");
+      const replaceText = replaceInput ? replaceInput.value : "";
+      if (!query) return;
+
+      const caseFold = !matchCaseCb.checked;
+      let replaceCount = 0;
+
+      editor.operation(() => {
+        let cursor = editor.getSearchCursor(query, CodeMirror.Pos(editor.firstLine(), 0), { caseFold: caseFold });
+        while (cursor.findNext()) {
+          cursor.replace(replaceText);
+          replaceCount++;
         }
+      });
+
+      if (replaceCount > 0) {
+        showToast(`Replaced ${replaceCount} occurrence(s).`);
+        doSearch(false, true);
+      } else {
+        showToast("No matches found to replace.");
+      }
     });
 
+    // --- FORMAT CODE (EXACT FROM ORIGINAL, PRESERVING UNDO & SCROLL) ---
+    document.getElementById("format-btn").addEventListener("click", () => {
+      const unformattedCode = editor.getValue();
+      const beautifyOpts = {
+        indent_size: indentConfig.size,
+        indent_with_tabs: indentConfig.useTabs,
+        wrap_line_length: 0,
+        preserve_newlines: true
+      };
 
-    // --- AUTO-HIGHLIGHT SELECTION ---
-    let autoSelectionMarks = []; let autoScrollbarMarks = null; let highlightTimeout = null;
-    editor.on("cursorActivity", () => {
-        autoSelectionMarks.forEach(m => m.clear()); autoSelectionMarks = [];
-        if (autoScrollbarMarks) { autoScrollbarMarks.clear(); autoScrollbarMarks = null; }
-        clearTimeout(highlightTimeout);
-        highlightTimeout = setTimeout(() => {
-            const selectedText = editor.getSelection();
-            if (document.getElementById("search-box").style.display === "flex" && selectedText === searchInput.value) return;
-            if (selectedText.length >= 2 && !selectedText.includes('\n')) {
-                editor.operation(() => {
-                    let cursor = editor.getSearchCursor(selectedText, CodeMirror.Pos(editor.firstLine(), 0), {caseFold: false});
-                    while (cursor.findNext()) autoSelectionMarks.push(editor.markText(cursor.from(), cursor.to(), {className: "auto-highlight"}));
-                });
-                // Using the specific soft blue CSS class to prevent overlap with orange Find markers
-                autoScrollbarMarks = editor.showMatchesOnScrollbar(selectedText, false, {className: "auto-highlight-scrollbar-mark"});
-            }
-        }, 300);
+      let formattedCode = unformattedCode;
+      if (currentMode === "htmlmixed" || currentMode === "xml") {
+        formattedCode = html_beautify(unformattedCode, beautifyOpts);
+      } else if (currentMode === "css") {
+        formattedCode = css_beautify(unformattedCode, beautifyOpts);
+      } else if (currentMode === "javascript" || currentMode === "clike") {
+        formattedCode = js_beautify(unformattedCode, beautifyOpts);
+      } else {
+        showToast("Formatter is available for HTML, CSS, JS, and C-like languages.");
+        return;
+      }
+
+      if (unformattedCode === formattedCode) {
+        showToast("No change, code is already clean.");
+        return;
+      }
+
+      const scrollInfo = editor.getScrollInfo();
+      editor.operation(() => {
+        editor.replaceRange(
+          formattedCode,
+          { line: 0, ch: 0 },
+          { line: editor.lineCount(), ch: 0 }
+        );
+      });
+      editor.scrollTo(scrollInfo.left, scrollInfo.top);
+      showToast("Applied proper line breaks, spacing, and indentation.");
     });
 
-    // --- MINIMAP SYNC & TYPING ---
-    const slider = document.getElementById("minimap-slider");
+    // --- TRIM TRAILING WHITESPACE LOGIC ---
+    document.getElementById("trim-btn").addEventListener("click", () => {
+      editor.operation(() => {
+        const lineCount = editor.lineCount();
+        let linesTrimmed = 0;
+
+        for (let i = 0; i < lineCount; i++) {
+          const text = editor.getLine(i);
+          const match = text.match(/[ \t]+$/);
+
+          if (match) {
+            editor.replaceRange(
+              "",
+              { line: i, ch: text.length - match[0].length },
+              { line: i, ch: text.length }
+            );
+            linesTrimmed++;
+          }
+        }
+
+        if (linesTrimmed > 0) {
+          showToast(`Trimmed trailing whitespace from ${linesTrimmed} line(s).`);
+        } else {
+          showToast("No trailing whitespace found.");
+        }
+      });
+    });
+
+    // --- DOCUMENT MINIMAP ENGINE (EXACT FROM ORIGINAL) ---
+    const minimapContainer = document.getElementById("minimap-container");
+    const minimapSlider = document.getElementById("minimap-slider");
+
+    const minimap = CodeMirror.fromTextArea(document.getElementById("minimap-textarea"), {
+      mode: "htmlmixed",
+      theme: "monokai",
+      readOnly: "nocursor",
+      lineNumbers: false,
+      foldGutter: false,
+      matchBrackets: false,
+      scrollbarStyle: "null",
+      lineWrapping: editor.getOption("lineWrapping")
+    });
+
+    minimap.swapDoc(editor.getDoc().linkedDoc({sharedHist: false}));
+
+    editor.on("fold", (cm, from, to) => {
+      minimap.foldCode(from, {
+        rangeFinder: () => { return { from: from, to: to }; }
+      }, "fold");
+    });
+
+    editor.on("unfold", (cm, from, to) => {
+      minimap.foldCode(from, {
+        rangeFinder: () => { return { from: from, to: to }; }
+      }, "unfold");
+    });
+
     function updateMinimapSlider() {
-        const info = editor.getScrollInfo(); const mapInfo = minimap.getScrollInfo();
-        if (info.height === 0) return;
-        let mapTop = mapInfo.height > mapInfo.clientHeight ? (info.top / (info.height - info.clientHeight)) * (mapInfo.height - mapInfo.clientHeight) : 0;
-        minimap.scrollTo(0, mapTop);
-        const yTop = minimap.charCoords({line: editor.lineAtHeight(info.top, "local"), ch: 0}, "local").top;
-        const yBot = minimap.charCoords({line: editor.lineAtHeight(info.top + info.clientHeight - 1, "local"), ch: 0}, "local").bottom;
-        slider.style.transform = `translateY(${yTop - mapTop}px)`; slider.style.height = `${yBot - yTop}px`;
+      const info = editor.getScrollInfo();
+      const mapInfo = minimap.getScrollInfo();
+
+      if (info.height === 0) return;
+
+      let mapScrollTop = 0;
+      if (mapInfo.height > mapInfo.clientHeight) {
+        const scrollPct = info.top / (info.height - info.clientHeight);
+        mapScrollTop = scrollPct * (mapInfo.height - mapInfo.clientHeight);
+      }
+      minimap.scrollTo(0, mapScrollTop);
+
+      const firstVisibleLine = editor.lineAtHeight(info.top, "local");
+      const lastVisibleLine = editor.lineAtHeight(info.top + info.clientHeight - 1, "local");
+
+      const yTop = minimap.charCoords({line: firstVisibleLine, ch: 0}, "local").top;
+      const yBottom = minimap.charCoords({line: lastVisibleLine, ch: 0}, "local").bottom;
+
+      const sliderHeight = yBottom - yTop;
+      const visualTop = yTop - mapScrollTop;
+
+      minimapSlider.style.transform = `translateY(${visualTop}px)`;
+      minimapSlider.style.height = `${sliderHeight}px`;
     }
 
-    let editorOnChangeTimeout = null;
-    editor.on("change", () => {
-        clearTimeout(editorOnChangeTimeout);
-        editorOnChangeTimeout = setTimeout(() => {
-          saveFiles(); updateDiffMarkers(editor.getValue());
-          if (bookmarkedLines.size > 0) updateBookmarkScrollbar();
-        }, 300);
-        searchIsDirty = true;
-    });
-
-    editor.on("scroll", updateMinimapSlider);
-    editor.on("viewportChange", updateMinimapSlider);
-
-    // Initial Load
-    if(files.length > 0) {
-        loadFile(activeFileId || files[0].id, true);
-    } else {
-        renderFileList();
+    let scrollRaf = null;
+    function requestSliderUpdate() {
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = requestAnimationFrame(updateMinimapSlider);
     }
+
+    editor.on("scroll", requestSliderUpdate);
+    editor.on("viewportChange", requestSliderUpdate);
     setTimeout(updateMinimapSlider, 100);
 
+    function syncMinimapWrap() {
+      const mainWrapper = editor.getWrapperElement();
+      const miniWrapper = minimap.getWrapperElement();
+
+      const editorWidth = mainWrapper.clientWidth;
+      const mainFontSize = parseFloat(window.getComputedStyle(mainWrapper).fontSize) || 14;
+      const miniFontSize = parseFloat(window.getComputedStyle(miniWrapper).fontSize) || 3;
+
+      const ratio = miniFontSize / mainFontSize;
+      const targetWidth = editorWidth * ratio;
+
+      minimap.setSize(targetWidth, "100%");
+      minimap.refresh();
+    }
+
+    setTimeout(syncMinimapWrap, 10);
+
+    const editorResizeObserver = new ResizeObserver(() => {
+      if (minimapContainer.style.display !== "none") {
+        syncMinimapWrap();
+      }
+    });
+    editorResizeObserver.observe(editor.getWrapperElement());
+
+    minimap.on("mousedown", (cm, e) => {
+      e.preventDefault();
+      const pos = cm.coordsChar({ left: e.clientX, top: e.clientY }, "window");
+      const mainY = editor.charCoords({ line: pos.line, ch: 0 }, "local").top;
+      const halfScreenHeight = editor.getScrollInfo().clientHeight / 2;
+      editor.scrollTo(null, mainY - halfScreenHeight);
+      editor.focus();
+    });
+
+    // --- MINIMAP TOGGLE LOGIC ---
+    const minimapBtn = document.getElementById("minimap-btn");
+    let isMinimapVisible = true;
+
+    minimapBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      isMinimapVisible = !isMinimapVisible;
+
+      if (isMinimapVisible) {
+        minimapContainer.style.display = "block";
+        minimapBtn.innerHTML = '<i class="fas fa-map"></i> Toggle Minimap';
+        setTimeout(() => {
+          editor.refresh();
+          minimap.refresh();
+          syncMinimapWrap();
+        }, 10);
+      } else {
+        minimapContainer.style.display = "none";
+        minimapBtn.innerHTML = '<i class="far fa-map"></i> Toggle Minimap';
+        setTimeout(() => {
+          editor.refresh();
+        }, 10);
+      }
+    });
+
+    // --- WRAP TOGGLE ---
+    const wrapBtn = document.getElementById("wrap-btn");
+    let isWrapped = false;
+    wrapBtn.addEventListener("click", () => {
+      isWrapped = !isWrapped;
+      editor.setOption("lineWrapping", isWrapped);
+      wrapBtn.innerHTML = isWrapped ? '<i class="fas fa-arrows-left-right-to-line"></i> Toggle Word Wrap' : '<i class="fa-solid fa-arrows-left-right"></i> Toggle Word Wrap';
+      minimap.setOption("lineWrapping", editor.getOption("lineWrapping"));
+    });
+
+    // --- WHITESPACE TOGGLE LOGIC ---
+    const whitespaceBtn = document.getElementById("whitespace-btn");
+    let isWhitespaceVisible = false;
+
+    const whitespaceOverlay = {
+      token: function(stream) {
+        if (stream.eatWhile(/ /)) return "space";
+        stream.next();
+        return null;
+      }
+    };
+
+    whitespaceBtn.addEventListener("click", () => {
+      isWhitespaceVisible = !isWhitespaceVisible;
+
+      if (isWhitespaceVisible) {
+        editor.addOverlay(whitespaceOverlay);
+        editor.getWrapperElement().classList.add("show-whitespaces");
+        whitespaceBtn.innerHTML = '<i class="fas fa-paragraph"></i> Toggle Show Whitespaces';
+      } else {
+        editor.removeOverlay(whitespaceOverlay);
+        editor.getWrapperElement().classList.remove("show-whitespaces");
+        whitespaceBtn.innerHTML = '<i class="fas fa-low-vision"></i> Toggle Show Whitespaces';
+      }
+    });
+
+    // --- TOGGLE FOLD/UNFOLD ALL LOGIC ---
+    const toggleFoldBtn = document.getElementById("fold-btn");
+    let isAllFolded = false;
+
+    toggleFoldBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      isAllFolded = !isAllFolded;
+      const action = isAllFolded ? "fold" : "unfold";
+
+      if (isAllFolded) {
+        toggleFoldBtn.innerHTML = '<i class="fa-solid fa-down-left-and-up-right-to-center"></i> Toggle Fold All';
+      } else {
+        toggleFoldBtn.innerHTML = '<i class="fa-solid fa-up-right-and-down-left-from-center"></i> Toggle Fold All';
+      }
+
+      editor.operation(() => {
+        const totalLines = editor.lineCount();
+        for (let i = 0; i < totalLines; i++) {
+          editor.foldCode(CodeMirror.Pos(i, 0), null, action);
+        }
+      });
+    });
+
+    // --- THEME TOGGLE (EXACT FROM ORIGINAL) ---
+    const themeBtn = document.getElementById("theme-btn");
+    let isDark = true;
+    themeBtn.addEventListener("click", () => {
+      isDark = !isDark;
+      const newTheme = isDark ? "monokai" : "default";
+      editor.setOption("theme", newTheme);
+      minimap.setOption("theme", newTheme);
+      themeBtn.innerHTML = isDark ? '<i class="fas fa-moon"></i> Toggle Theme' : '<i class="fas fa-sun"></i> Toggle Theme';
+      if (isDark) {
+        document.body.classList.remove("light-theme");
+        document.body.style.backgroundColor = "#272822";
+      } else {
+        document.body.classList.add("light-theme");
+        document.body.style.backgroundColor = "#e0e0e0";
+      }
+    });
+
+    // --- AUTO-HIGHLIGHT SELECTION LOGIC ---
+    let autoSelectionMarks = [];
+    let scrollbarMarks = null;
+    let highlightTimeout = null;
+
+    editor.on("cursorActivity", () => {
+      autoSelectionMarks.forEach(m => m.clear());
+      autoSelectionMarks = [];
+      if (scrollbarMarks) {
+        scrollbarMarks.clear();
+        scrollbarMarks = null;
+      }
+
+      clearTimeout(highlightTimeout);
+      highlightTimeout = setTimeout(() => {
+        const selectedText = editor.getSelection();
+
+        if (document.getElementById("search-box").style.display === "flex") {
+          if (selectedText === searchInput.value) {
+            return;
+          }
+        }
+
+        if (selectedText.length >= 2 && !selectedText.includes('\n')) {
+          editor.operation(() => {
+            let cursor = editor.getSearchCursor(selectedText, CodeMirror.Pos(editor.firstLine(), 0), {caseFold: false});
+            while (cursor.findNext()) {
+              let mark = editor.markText(cursor.from(), cursor.to(), {className: "auto-highlight"});
+              autoSelectionMarks.push(mark);
+            }
+          });
+          scrollbarMarks = editor.showMatchesOnScrollbar(selectedText, false);
+        }
+      }, 300);
+    });
+
+    // --- GUTTER CLICK & SCROLLBAR MARKERS ---
+    const bookmarkAnnotation = editor.annotateScrollbar("cm-bookmark-scrollbar-mark");
+    const bookmarkedLines = new Set();
+
+    function updateBookmarkScrollbar() {
+      let ranges = [];
+
+      bookmarkedLines.forEach(lineHandle => {
+        let lineNo = editor.getLineNumber(lineHandle);
+
+        if (lineNo === null) {
+          bookmarkedLines.delete(lineHandle);
+        } else {
+          ranges.push({
+            from: CodeMirror.Pos(lineNo, 0),
+            to: CodeMirror.Pos(lineNo + 1, 0)
+          });
+        }
+      });
+
+      ranges.sort((a, b) => a.from.line - b.from.line);
+      bookmarkAnnotation.update(ranges);
+    }
+
+    editor.on("gutterClick", (cm, line, gutter) => {
+      if (gutter === "CodeMirror-linenumbers") {
+        const lineHandle = cm.getLineHandle(line);
+
+        if (lineHandle.isGutterHighlighted) {
+          cm.removeLineClass(line, "gutter", "cm-highlighted-gutter");
+          lineHandle.isGutterHighlighted = false;
+          bookmarkedLines.delete(lineHandle);
+        } else {
+          cm.addLineClass(line, "gutter", "cm-highlighted-gutter");
+          lineHandle.isGutterHighlighted = true;
+          bookmarkedLines.add(lineHandle);
+        }
+
+        updateBookmarkScrollbar();
+      }
+    });
+
+    // --- CHANGE TRACKING ENGINE (GIT-STYLE GUTTER, EXACT FROM ORIGINAL) ---
+    let baselineText = "";
+
+    function updateDiffMarkers(editorText) {
+      if (editorText === baselineText) {
+        editor.clearGutter("diff-gutter");
+        return;
+      }
+
+      const diffs = Diff.diffLines(baselineText, editorText);
+
+      editor.operation(() => {
+        editor.clearGutter("diff-gutter");
+        let currentLineIdx = 0;
+
+        for (let i = 0; i < diffs.length; i++) {
+          const part = diffs[i];
+
+          if (part.added) {
+            const isModification = (i > 0 && diffs[i - 1].removed);
+            for (let j = 0; j < part.count; j++) {
+              const marker = document.createElement("div");
+              marker.className = isModification ? "diff-marker diff-modified" : "diff-marker diff-added";
+              editor.setGutterMarker(currentLineIdx + j, "diff-gutter", marker);
+            }
+            currentLineIdx += part.count;
+          } else if (part.removed) {
+            const isFollowedByAddition = (i < diffs.length - 1 && diffs[i + 1].added);
+            if (!isFollowedByAddition) {
+              const marker = document.createElement("div");
+              marker.className = "diff-marker diff-deleted";
+              const targetLine = Math.min(currentLineIdx, editor.lineCount() - 1);
+              editor.setGutterMarker(targetLine, "diff-gutter", marker);
+            }
+          } else {
+            currentLineIdx += part.count;
+          }
+        }
+      });
+    }
+
+    // --- STAGE BTN ---
+    document.getElementById("stage-btn").addEventListener("click", () => {
+      baselineText = editor.getValue();
+      editor.clearGutter("diff-gutter");
+      showToast("Changes staged.");
+    });
+
+    // --- DYNAMIC LANGUAGE MODE LOADER & MULTI-FILE EXPLORER ---
+    function setEditorLanguage(filename) {
+      const extMatch = /.+\.([^.]+)$/.exec(filename.toLowerCase());
+      let info = extMatch ? CodeMirror.findModeByExtension(extMatch[1]) : null;
+
+      if (info) {
+        currentMode = info.mode;
+        document.getElementById("lang-badge").textContent = info.name;
+        CodeMirror.requireMode(info.mode, () => {
+          editor.setOption("mode", info.mime);
+          minimap.setOption("mode", info.mime);
+          editor.performLint();
+        });
+      } else {
+        currentMode = "null";
+        document.getElementById("lang-badge").textContent = "Plain Text";
+        editor.setOption("mode", "null");
+        minimap.setOption("mode", "null");
+        editor.performLint();
+      }
+    }
+
+    function renderFileList() {
+      const list = document.getElementById("file-list");
+      list.innerHTML = "";
+      files.forEach(f => {
+        const item = document.createElement("div");
+        item.className = "file-item" + (f.id === activeFileId ? " active" : "");
+
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "file-name-span";
+        nameSpan.innerHTML = `<i class="fas fa-file-code" style="margin-right:6px;"></i>${f.name}`;
+
+        const actions = document.createElement("div");
+        actions.className = "file-actions";
+
+        const renameBtn = document.createElement("button");
+        renameBtn.className = "icon-btn";
+        renameBtn.title = "Rename";
+        renameBtn.innerHTML = '<i class="fas fa-pen"></i>';
+        renameBtn.onclick = (e) => {
+          e.stopPropagation();
+          const newName = prompt("Rename file:", f.name);
+          if (newName && newName.trim()) {
+            f.name = newName.trim();
+            if (f.id === activeFileId) {
+              document.getElementById("current-file-label").textContent = f.name;
+              setEditorLanguage(f.name);
+            }
+            storeInLocalMemory();
+            renderFileList();
+          }
+        };
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "icon-btn file-delete";
+        delBtn.title = "Delete";
+        delBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          if (files.length <= 1) {
+            showToast("Cannot delete the last remaining file.");
+            return;
+          }
+          files = files.filter(file => file.id !== f.id);
+          if (activeFileId === f.id) {
+            loadFile(files[0].id, true);
+          } else {
+            storeInLocalMemory();
+            renderFileList();
+          }
+        };
+
+        actions.appendChild(renameBtn);
+        actions.appendChild(delBtn);
+        item.appendChild(nameSpan);
+        item.appendChild(actions);
+        item.onclick = () => {
+          if (f.id !== activeFileId) loadFile(f.id, false);
+        };
+        list.appendChild(item);
+      });
+    }
+
+    function loadFile(id, skipSave = false) {
+      if (!skipSave) storeInLocalMemory();
+      const target = files.find(f => f.id === id) || files[0];
+      activeFileId = target.id;
+
+      document.getElementById("current-file-label").textContent = target.name;
+      baselineText = target.content;
+      editor.setValue(target.content);
+      editor.clearHistory();
+      bookmarkedLines.clear();
+      updateBookmarkScrollbar();
+
+      indentConfig = detectIndent(target.content);
+      indentInput.value = indentConfig.useTabs ? "tab" : indentConfig.size;
+      editor.setOption("indentUnit", indentConfig.size);
+      editor.setOption("tabSize", indentConfig.size);
+      editor.setOption("indentWithTabs", indentConfig.useTabs);
+
+      if (isWhitespaceVisible) {
+        editor.removeOverlay(whitespaceOverlay);
+        editor.addOverlay(whitespaceOverlay);
+      }
+
+      setEditorLanguage(target.name);
+      updateDiffMarkers(target.content);
+      renderFileList();
+      storeInLocalMemory();
+      setTimeout(() => {
+        syncMinimapWrap();
+        updateMinimapSlider();
+      }, 50);
+    }
+
+    document.getElementById("new-file-btn").addEventListener("click", () => {
+      const name = prompt("Enter file name (e.g., app.js, main.cpp, Main.java, index.php):", "untitled.py");
+      if (name && name.trim()) {
+        const newFile = { id: Date.now(), name: name.trim(), content: "" };
+        files.push(newFile);
+        loadFile(newFile.id, false);
+      }
+    });
+
+    // --- WHILE TYPING ---
+    let editorOnChangeTimeout = null;
+    editor.on("change", () => {
+      clearTimeout(editorOnChangeTimeout);
+      editorOnChangeTimeout = setTimeout(() => {
+        const editorText = editor.getValue();
+        storeInLocalMemory();
+        updateDiffMarkers(editorText);
+        if (bookmarkedLines.size > 0) {
+          updateBookmarkScrollbar();
+        }
+      }, 300);
+
+      searchIsDirty = true;
+    });
+
+    // --- INITIALIZE ON LOAD ---
+    loadFile(activeFileId, true);
+
+    setTimeout(() => {
+      document.getElementById("whitespace-btn").click();
+    }, 300);
   </script>
 </body>
+
 </html>
