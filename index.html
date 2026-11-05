@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Code Draft</title>
+  <title>Source Quasar</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
@@ -29,7 +29,10 @@
 
     /* --- SIDEBAR FILE EXPLORER --- */
     #sidebar {
+      position: relative; /* Needed for the custom simplescroll bar */
       width: 240px;
+      min-width: 150px;
+      max-width: 60vw;
       background-color: #1e1e1e;
       border-right: 1px solid #333;
       display: flex;
@@ -76,18 +79,28 @@
     #file-list {
       flex: 1;
       overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: none; /* Hides native scrollbar in Firefox */
+      -ms-overflow-style: none;
+    }
+    #file-list::-webkit-scrollbar {
+      display: none; /* Hides native scrollbar in Chrome/Safari/Edge */
     }
 
     .file-item {
-      padding: 8px 15px;
+      padding: 6px 10px;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 13px;
+      border-left: 3px solid transparent;
+      user-select: none;
+      -webkit-user-select: none;
+      white-space: nowrap;
+      overflow: hidden;
       color: #ccc;
       border-bottom: 1px solid #2a2a2a;
-      gap: 8px;
     }
     .file-item:hover {
       background-color: #333;
@@ -112,13 +125,22 @@
     }
 
     .file-name-span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .file-name-span i{
+      flex-shrink: 0;
+    }
+
+    .file-name-span > span:last-child {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
     /* Per-File 3-Dot Menu */
@@ -225,11 +247,34 @@
       outline-offset: -2px;
     }
     .folder-chevron {
+      display: inline-block;
       width: 12px;
       font-size: 10px;
       text-align: center;
       color: #888;
       transition: transform 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    /* --- SIDEBAR RESIZER HANDLE --- */
+    #sidebar-resizer {
+      width: 5px;
+      cursor: col-resize;
+      background-color: transparent;
+      flex-shrink: 0;
+      z-index: 150;
+      margin-left: -3px;
+      margin-right: -2px;
+      transition: background-color 0.15s;
+    }
+    #sidebar-resizer:hover,
+    #sidebar-resizer.resizing {
+      background-color: #409050;
+    }
+    body.resizing-sidebar {
+      cursor: col-resize !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
     }
 
     /* --- MAIN PANEL & TOOLBAR --- */
@@ -528,7 +573,7 @@
       font-family: 'Courier New', Courier, monospace;
     }
 
-    /* --- CUSTOM SCROLLBAR STYLING (EXACT FROM ORIGINAL) --- */
+    /* --- CUSTOM SCROLLBAR STYLING (EDITOR & FILE EXPLORER) --- */
     .CodeMirror-simplescroll-horizontal {
       height: 10px;
     }
@@ -549,7 +594,6 @@
     .CodeMirror-simplescroll-vertical div:hover {
       background: #444 !important;
     }
-
     body.light-theme .CodeMirror-simplescroll-horizontal,
     body.light-theme .CodeMirror-simplescroll-vertical,
     body.light-theme .CodeMirror-scrollbar-filler {
@@ -562,6 +606,38 @@
     }
     body.light-theme .CodeMirror-simplescroll-horizontal div:hover,
     body.light-theme .CodeMirror-simplescroll-vertical div:hover {
+      background: #aaa !important;
+    }
+
+    /* File Explorer (#file-list) Matching Scrollbar */
+    #file-list::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    #file-list::-webkit-scrollbar-track,
+    #file-list::-webkit-scrollbar-corner {
+      background: rgba(0, 0, 0, 0.3) !important;
+    }
+    #file-list::-webkit-scrollbar-thumb {
+      background: #333 !important;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    #file-list::-webkit-scrollbar-thumb:hover {
+      background: #444 !important;
+    }
+
+    /* Light Theme - File Explorer (#file-list) Matching Scrollbar */
+    body.light-theme #file-list::-webkit-scrollbar-track,
+    body.light-theme #file-list::-webkit-scrollbar-corner {
+      background: rgba(200, 200, 200, 0.3) !important;
+    }
+    body.light-theme #file-list::-webkit-scrollbar-thumb {
+      background: #ccc !important;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    body.light-theme #file-list::-webkit-scrollbar-thumb:hover {
       background: #aaa !important;
     }
 
@@ -893,11 +969,13 @@
     <div id="file-list"></div>
   </div>
 
+  <div id="sidebar-resizer" title="Drag to resize File Explorer"></div>
+
   <!-- Main Editor Panel -->
   <div id="main-panel">
     <div id="toolbar">
       <div id="title-group">
-        <div id="title" title="Multi-Language Web Editor">Code Draft</div>
+        <div id="title" title="by Minhas Kamal">Source Quasar</div>
         <span id="current-file-label">index.html</span>
         <span id="lang-badge">HTML</span>
       </div>
@@ -1126,12 +1204,12 @@
   console.log("Ready!");
 <\/script>`;
 
-    let files = JSON.parse(localStorage.getItem("CodeDraft_Files")) || [
+    let files = JSON.parse(localStorage.getItem("SourceQuasar_Files")) || [
       { id: 1, name: "index.html", content: defaultHTML },
       { id: 2, name: "main.py", content: "def greet(name):\n  print(f'Hello, {name}!')\n\ngreet('World')\n" },
       { id: 3, name: "query.sql", content: "SELECT id, username, created_at\nFROM users\nWHERE active = 1;\n" }
     ];
-    let activeFileId = parseInt(localStorage.getItem("CodeDraft_ActiveFile"), 10) || files[0].id;
+    let activeFileId = parseInt(localStorage.getItem("SourceQuasar_ActiveFile"), 10) || files[0].id;
     let currentMode = "htmlmixed";
 
     // Map of fileId -> { doc, miniDoc, baselineText, indentConfig, bookmarkedLines, searchState }
@@ -1145,8 +1223,8 @@
             f.content = fileSessions.get(f.id).doc.getValue();
           }
         });
-        localStorage.setItem("CodeDraft_Files", JSON.stringify(files));
-        localStorage.setItem("CodeDraft_ActiveFile", activeFileId);
+        localStorage.setItem("SourceQuasar_Files", JSON.stringify(files));
+        localStorage.setItem("SourceQuasar_ActiveFile", activeFileId);
       } catch (e) {
         console.warn("Cannot save to LocalStorage!");
         return false;
@@ -1162,7 +1240,7 @@
       }
     }
 
-    // --- SMART INDENT SNIFFING (EXACT FROM ORIGINAL) ---
+    // --- SMART INDENT SNIFFING ---
     function detectIndent(code) {
       const lines = code.split('\n', 500);
       let minSpaces = Infinity;
@@ -1315,7 +1393,98 @@
       }
     });
 
-    // --- SEARCH, HIGHLIGHT & STATS LOGIC (EXACT FROM ORIGINAL) ---
+    // --- UNIVERSAL MULTI-LANGUAGE CODE FOLDING ENGINE ---
+    CodeMirror.registerHelper("fold", "universal", function(cm, start) {
+      const lineText = cm.getLine(start.line);
+      if (!lineText || !lineText.trim()) return undefined;
+
+      // 1. Try native CodeMirror mode-specific folding first (C/JS braces, HTML/XML tags, /* */ comments)
+      if (CodeMirror.fold.auto) {
+        const nativeFold = CodeMirror.fold.auto(cm, start);
+        if (nativeFold) return nativeFold;
+      }
+
+      // 2. Generic Multi-line Parentheses (...) & Brackets [...] (SQL DDL/subqueries, arrays, tuples)
+      const openMatch = /[(\[]/.exec(lineText);
+      if (openMatch) {
+        const openChar = openMatch[0];
+        const closeChar = openChar === "(" ? ")" : "]";
+        const openIdx = openMatch.index;
+        let depth = 0;
+        const lastLine = Math.min(cm.lastLine(), start.line + 500);
+
+        for (let l = start.line; l <= lastLine; l++) {
+          const text = cm.getLine(l);
+          const startCol = (l === start.line) ? openIdx : 0;
+          for (let ch = startCol; ch < text.length; ch++) {
+            const tokenType = cm.getTokenTypeAt(CodeMirror.Pos(l, ch + 1));
+            if (tokenType && (tokenType.includes("string") || tokenType.includes("comment"))) continue;
+            if (text[ch] === openChar) depth++;
+            else if (text[ch] === closeChar) {
+              depth--;
+              if (depth === 0) {
+                if (l > start.line) {
+                  return {
+                    from: CodeMirror.Pos(start.line, openIdx + 1),
+                    to: CodeMirror.Pos(l, ch)
+                  };
+                }
+                break;
+              }
+            }
+          }
+          if (depth === 0) break;
+        }
+      }
+
+      // 3. Generic Keyword Block Folding (SQL, Lua, Ruby, Pascal, Bash, Verilog, etc.)
+      // Matches BEGIN..END, CASE..END/ESAC, DO..DONE/END, IF..FI/END IF, LOOP..END LOOP
+      const kwOpenRegex = /\b(BEGIN|CASE|DO|LOOP)\b/i;
+      const kwMatch = kwOpenRegex.exec(lineText);
+      if (kwMatch && !/\bEND\b/i.test(lineText.slice(kwMatch.index))) {
+        let depth = 0;
+        const lastLine = Math.min(cm.lastLine(), start.line + 500);
+        const tokenRegex = /\b(BEGIN|CASE|DO|LOOP|END|DONE|ESAC)\b/gi;
+
+        for (let l = start.line; l <= lastLine; l++) {
+          const text = cm.getLine(l);
+          tokenRegex.lastIndex = (l === start.line) ? kwMatch.index : 0;
+          let m;
+          while ((m = tokenRegex.exec(text)) !== null) {
+            const tokenType = cm.getTokenTypeAt(CodeMirror.Pos(l, m.index + 1));
+            if (tokenType && (tokenType.includes("string") || tokenType.includes("comment"))) continue;
+            const word = m[1].toUpperCase();
+            if (word === "BEGIN" || word === "CASE" || word === "DO" || word === "LOOP") {
+              depth++;
+            } else if (word === "END" || word === "DONE" || word === "ESAC") {
+              depth--;
+              if (depth === 0) {
+                if (l > start.line) {
+                  return {
+                    from: CodeMirror.Pos(start.line, lineText.length),
+                    to: CodeMirror.Pos(l, m.index)
+                  };
+                }
+                break;
+              }
+            }
+          }
+          if (depth === 0) break;
+        }
+      }
+
+      // 4. Universal Indentation Fallback (Python, YAML, CoffeeScript, indented SQL/Markdown)
+      if (CodeMirror.fold.indent) {
+        return CodeMirror.fold.indent(cm, start);
+      }
+
+      return undefined;
+    });
+
+    // Apply universal folding globally to the editor (no per-language special cases needed!)
+    editor.setOption("foldOptions", { rangeFinder: CodeMirror.fold.universal });
+
+    // --- SEARCH, HIGHLIGHT & STATS LOGIC ---
     const searchBox = document.getElementById("search-box");
     const searchInput = document.getElementById("search-input");
     const matchCaseCb = document.getElementById("match-case-cb");
@@ -1561,7 +1730,7 @@
       });
     });
 
-    // --- DOCUMENT MINIMAP ENGINE (EXACT FROM ORIGINAL) ---
+    // --- DOCUMENT MINIMAP ENGINE ---
     const minimapContainer = document.getElementById("minimap-container");
     const minimapSlider = document.getElementById("minimap-slider");
 
@@ -1633,21 +1802,30 @@
     let lastMinimapWidth = 0;
 
     function syncMinimapWrap() {
-      const scrollerWidth = editor.display.scroller.clientWidth;
-      const gutterWidth = editor.display.gutters.offsetWidth;
-      const mainTextWidth = scrollerWidth - gutterWidth - 8;
+      const wrapper = editor.getWrapperElement();
+      const gutters = editor.display.gutters;
+      if (!wrapper || !gutters) return;
+
+      const wrapperRect = wrapper.getBoundingClientRect();
+      const guttersRect = gutters.getBoundingClientRect();
+
+      const simpleVScroll = wrapper.querySelector(".CodeMirror-simplescroll-vertical");
+      const vScrollWidth = (simpleVScroll && simpleVScroll.offsetWidth > 0) ? simpleVScroll.offsetWidth : 0;
+
+      const mainTextWidth = (wrapperRect.right - vScrollWidth) - guttersRect.right - 8;
       if (mainTextWidth <= 0) return;
 
       const mainCharWidth = editor.defaultCharWidth() || 9;
       const miniCharWidth = minimap.defaultCharWidth() || 1.8;
 
       const ratio = miniCharWidth / mainCharWidth;
-      const targetWidth = Math.ceil(mainTextWidth * ratio);
+      const targetWidth = Math.floor(mainTextWidth * ratio);
 
       minimap.setSize(targetWidth, "100%");
       minimap.refresh();
       requestSliderUpdate();
     }
+
 
     setTimeout(syncMinimapWrap, 10);
 
@@ -1760,7 +1938,7 @@
       });
     });
 
-    // --- THEME TOGGLE (EXACT FROM ORIGINAL) ---
+    // --- THEME TOGGLE ---
     const themeBtn = document.getElementById("theme-btn");
     let isDark = true;
     themeBtn.addEventListener("click", () => {
@@ -1783,7 +1961,7 @@
     let scrollbarMarks = null;
     let highlightTimeout = null;
 
-    editor.on("cursorActivity", () => {
+    function updateSelectionHighlights() {
       autoSelectionMarks.forEach(m => m.clear());
       autoSelectionMarks = [];
       if (scrollbarMarks) {
@@ -1811,8 +1989,10 @@
           });
           scrollbarMarks = editor.showMatchesOnScrollbar(selectedText, false);
         }
-      }, 300);
-    });
+      }, 150);
+    }
+
+    editor.on("cursorActivity", updateSelectionHighlights);
 
     // --- GUTTER CLICK & SCROLLBAR MARKERS ---
     const bookmarkAnnotation = editor.annotateScrollbar("cm-bookmark-scrollbar-mark");
@@ -2450,6 +2630,7 @@
         editor.focus();
         syncMinimapWrap();
         updateMinimapSlider();
+        updateSelectionHighlights();
       }, 20);
     }
 
@@ -2499,6 +2680,105 @@
       }, 300);
 
       searchIsDirty = true;
+    });
+
+    // --- SIDEBAR RESIZER LOGIC ---
+    const sidebarEl = document.getElementById("sidebar");
+    const sidebarResizer = document.getElementById("sidebar-resizer");
+    const savedSidebarWidth = localStorage.getItem("SourceQuasar_SidebarWidth");
+    if (savedSidebarWidth) {
+      sidebarEl.style.width = `${savedSidebarWidth}px`;
+    }
+
+    let isResizingSidebar = false;
+
+    sidebarResizer.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      isResizingSidebar = true;
+      sidebarResizer.classList.add("resizing");
+      document.body.classList.add("resizing-sidebar");
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (!isResizingSidebar) return;
+      const newWidth = Math.max(150, Math.min(window.innerWidth * 0.6, e.clientX));
+      sidebarEl.style.width = `${newWidth}px`;
+      syncMinimapWrap();
+    });
+
+    document.addEventListener("mouseup", () => {
+      if (!isResizingSidebar) return;
+      isResizingSidebar = false;
+      sidebarResizer.classList.remove("resizing");
+      document.body.classList.remove("resizing-sidebar");
+      localStorage.setItem("SourceQuasar_SidebarWidth", parseInt(sidebarEl.style.width, 10));
+      editor.refresh();
+      syncMinimapWrap();
+    });
+
+    // --- FILE EXPLORER SIMPLESCROLL ENGINE ---
+    const sidebarScrollbar = document.createElement("div");
+    sidebarScrollbar.className = "CodeMirror-simplescroll-vertical";
+    sidebarScrollbar.style.cssText = "position: absolute; right: 0; bottom: 0; z-index: 200; display: none;";
+    const sidebarThumb = document.createElement("div");
+    sidebarThumb.style.cssText = "position: absolute; left: 0; width: 100%; box-sizing: border-box;";
+    sidebarScrollbar.appendChild(sidebarThumb);
+    sidebarEl.appendChild(sidebarScrollbar);
+
+    function updateSidebarScrollbar() {
+      const headerHeight = document.getElementById("sidebar-header").offsetHeight;
+      const clientH = fileListEl.clientHeight;
+      const scrollH = fileListEl.scrollHeight;
+
+      if (scrollH <= clientH + 1) {
+        sidebarScrollbar.style.display = "none";
+        return;
+      }
+
+      sidebarScrollbar.style.display = "block";
+      sidebarScrollbar.style.top = `${headerHeight}px`;
+      sidebarScrollbar.style.height = `${clientH}px`;
+
+      const thumbHeight = Math.max(20, (clientH / scrollH) * clientH);
+      const maxTop = clientH - thumbHeight;
+      const scrollPct = fileListEl.scrollTop / Math.max(1, scrollH - clientH);
+      sidebarThumb.style.height = `${thumbHeight}px`;
+      sidebarThumb.style.top = `${scrollPct * maxTop}px`;
+    }
+
+    fileListEl.addEventListener("scroll", updateSidebarScrollbar);
+    new ResizeObserver(updateSidebarScrollbar).observe(fileListEl);
+    new MutationObserver(updateSidebarScrollbar).observe(fileListEl, { childList: true, subtree: true });
+
+    // Allow dragging the File Explorer scrollbar thumb
+    let isDraggingSidebarScroll = false;
+    let sidebarScrollStartY = 0;
+    let sidebarScrollStartTop = 0;
+
+    sidebarThumb.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      isDraggingSidebarScroll = true;
+      sidebarScrollStartY = e.clientY;
+      sidebarScrollStartTop = fileListEl.scrollTop;
+      document.body.style.userSelect = "none";
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (!isDraggingSidebarScroll) return;
+      const clientH = fileListEl.clientHeight;
+      const scrollH = fileListEl.scrollHeight;
+      const thumbHeight = Math.max(20, (clientH / scrollH) * clientH);
+      const maxThumbTop = Math.max(1, clientH - thumbHeight);
+      const deltaY = e.clientY - sidebarScrollStartY;
+      fileListEl.scrollTop = sidebarScrollStartTop + (deltaY / maxThumbTop) * (scrollH - clientH);
+    });
+
+    document.addEventListener("mouseup", () => {
+      if (isDraggingSidebarScroll) {
+        isDraggingSidebarScroll = false;
+        document.body.style.userSelect = "";
+      }
     });
 
     // --- INITIALIZE ON LOAD ---
