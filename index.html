@@ -116,16 +116,120 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .file-actions {
+
+    /* Per-File 3-Dot Menu */
+    .file-menu-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .file-menu-btn {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.15s, background-color 0.15s;
+    }
+    .file-item:hover .file-menu-btn,
+    .file-item.active .file-menu-btn,
+    .file-menu-btn.active {
+      opacity: 1;
+    }
+    .file-menu-btn:hover {
+      background-color: rgba(128, 128, 128, 0.25);
+    }
+
+    .file-menu-dropdown {
       display: none;
-      gap: 4px;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: #2d2d2d;
+      min-width: 140px;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+      z-index: 9500;
+      border-radius: 4px;
+      border: 1px solid #444;
+      padding: 4px 0;
+      flex-direction: column;
     }
-    .file-item:hover .file-actions {
+    .file-menu-dropdown.show {
       display: flex;
     }
-    .file-delete:hover {
+    body.light-theme .file-menu-dropdown {
+      background-color: #ffffff;
+      border-color: #ccc;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+    }
+
+    .file-menu-item {
+      background: none;
+      color: #ccc;
+      border: none;
+      padding: 8px 14px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .file-menu-item i {
+      width: 14px;
+      text-align: center;
+    }
+    .file-menu-item:hover {
+      background-color: #444;
+      color: #fff;
+    }
+    body.light-theme .file-menu-item {
+      color: #333;
+    }
+    body.light-theme .file-menu-item:hover {
+      background-color: #e0e0e0;
+      color: #000;
+    }
+    .file-menu-item.delete-opt {
       color: #ff6b6b;
+    }
+    .file-menu-item.delete-opt:hover {
+      background-color: #c93b3b;
+      color: #fff;
+    }
+
+    /* --- FOLDER TREE & DRAG-AND-DROP STYLING --- */
+    .file-item {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .file-item.dragging {
+      opacity: 0.4;
+    }
+    .file-item.drag-over {
+      background-color: rgba(64, 144, 80, 0.35) !important;
+      outline: 1px dashed #4CAF50;
+      outline-offset: -1px;
+    }
+    #file-list.drag-over-root {
+      background-color: rgba(64, 144, 80, 0.12);
+      outline: 2px dashed #4CAF50;
+      outline-offset: -2px;
+    }
+    .folder-chevron {
+      width: 12px;
+      font-size: 10px;
+      text-align: center;
+      color: #888;
+      transition: transform 0.15s ease;
     }
 
     /* --- MAIN PANEL & TOOLBAR --- */
@@ -478,6 +582,7 @@
       top: 0;
       right: 0;
       width: 100px;
+      max-width: 100px;
       height: 100%;
       border-left: 1px solid #333;
       background: #1e1e1e;
@@ -492,12 +597,18 @@
     }
 
     #minimap-container .CodeMirror {
+      flex: none !important;
       font-size: 3px !important;
       line-height: 4px !important;
       height: 100%;
       background: transparent;
       user-select: none !important;
       -webkit-user-select: none !important;
+    }
+
+    #minimap-container pre.CodeMirror-line,
+    #minimap-container pre.CodeMirror-line-like {
+      padding: 0 !important;
     }
 
     #minimap-container .CodeMirror,
@@ -773,7 +884,11 @@
   <div id="sidebar">
     <div id="sidebar-header">
       <span>FILES</span>
-      <button class="icon-btn" id="new-file-btn" title="New File"><i class="fas fa-plus"></i></button>
+      <div style="display: flex; gap: 4px;">
+        <button class="icon-btn" id="new-file-btn" title="New File"><i class="fas fa-file-circle-plus"></i></button>
+        <button class="icon-btn" id="new-folder-btn" title="New Folder"><i class="fas fa-folder-plus"></i></button>
+        <button class="icon-btn" id="download-all-btn" title="Download All as ZIP"><i class="fas fa-file-zipper"></i></button>
+      </div>
     </div>
     <div id="file-list"></div>
   </div>
@@ -910,11 +1025,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/markdown-fold.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/comment-fold.js"></script>
 
-  <!-- Scrollbar, Diff & Lint Addons -->
+  <!-- Scrollbar, Diff, Zip & Lint Addons -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/scroll/annotatescrollbar.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/matchesonscrollbar.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/scroll/simplescrollbars.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/diff@5.2.0/dist/diff.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.6/jshint.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/htmlhint@1.9.2/dist/htmlhint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/csslint/1.0.5/csslint.min.js"></script>
@@ -1018,12 +1134,17 @@
     let activeFileId = parseInt(localStorage.getItem("CodeDraft_ActiveFile"), 10) || files[0].id;
     let currentMode = "htmlmixed";
 
+    // Map of fileId -> { doc, miniDoc, baselineText, indentConfig, bookmarkedLines, searchState }
+    const fileSessions = new Map();
+
     function storeInLocalMemory() {
       try {
-        if (activeFileId) {
-          const activeFile = files.find(f => f.id === activeFileId);
-          if (activeFile) activeFile.content = editor.getValue();
-        }
+        // Sync content from any open background CodeMirror.Doc instances
+        files.forEach(f => {
+          if (f.type !== "folder" && fileSessions.has(f.id)) {
+            f.content = fileSessions.get(f.id).doc.getValue();
+          }
+        });
         localStorage.setItem("CodeDraft_Files", JSON.stringify(files));
         localStorage.setItem("CodeDraft_ActiveFile", activeFileId);
       } catch (e) {
@@ -1452,6 +1573,7 @@
       foldGutter: false,
       matchBrackets: false,
       scrollbarStyle: "null",
+      viewportMargin: Infinity, // Forces minimap to measure all wrapped lines immediately
       lineWrapping: editor.getOption("lineWrapping")
     });
 
@@ -1471,29 +1593,32 @@
 
     function updateMinimapSlider() {
       const info = editor.getScrollInfo();
-      const mapInfo = minimap.getScrollInfo();
-
       if (info.height === 0) return;
 
+      const topPos = editor.coordsChar({ left: 0, top: info.top }, "local");
+      const bottomPos = editor.coordsChar({ left: 99999, top: info.top + info.clientHeight - 1 }, "local");
+
+      const yTop = minimap.charCoords(topPos, "local").top;
+      const yBottom = minimap.charCoords(bottomPos, "local").bottom;
+      const sliderHeight = Math.max(6, yBottom - yTop);
+
+      const mapInfo = minimap.getScrollInfo();
+      const viewHeight = minimapContainer.clientHeight || mapInfo.clientHeight;
+
       let mapScrollTop = 0;
-      if (mapInfo.height > mapInfo.clientHeight) {
-        const scrollPct = info.top / (info.height - info.clientHeight);
-        mapScrollTop = scrollPct * (mapInfo.height - mapInfo.clientHeight);
+      if (mapInfo.height > viewHeight) {
+        const maxMiniTop = Math.max(1, mapInfo.height - sliderHeight);
+        const miniPct = Math.min(1, Math.max(0, yTop / maxMiniTop));
+        mapScrollTop = miniPct * (mapInfo.height - viewHeight);
       }
       minimap.scrollTo(0, mapScrollTop);
 
-      const firstVisibleLine = editor.lineAtHeight(info.top, "local");
-      const lastVisibleLine = editor.lineAtHeight(info.top + info.clientHeight - 1, "local");
-
-      const yTop = minimap.charCoords({line: firstVisibleLine, ch: 0}, "local").top;
-      const yBottom = minimap.charCoords({line: lastVisibleLine, ch: 0}, "local").bottom;
-
-      const sliderHeight = yBottom - yTop;
-      const visualTop = yTop - mapScrollTop;
+      const visualTop = Math.max(0, Math.min(viewHeight - sliderHeight, yTop - mapScrollTop));
 
       minimapSlider.style.transform = `translateY(${visualTop}px)`;
       minimapSlider.style.height = `${sliderHeight}px`;
     }
+
 
     let scrollRaf = null;
     function requestSliderUpdate() {
@@ -1505,26 +1630,32 @@
     editor.on("viewportChange", requestSliderUpdate);
     setTimeout(updateMinimapSlider, 100);
 
+    let lastMinimapWidth = 0;
+
     function syncMinimapWrap() {
-      const mainWrapper = editor.getWrapperElement();
-      const miniWrapper = minimap.getWrapperElement();
+      const scrollerWidth = editor.display.scroller.clientWidth;
+      const gutterWidth = editor.display.gutters.offsetWidth;
+      const mainTextWidth = scrollerWidth - gutterWidth - 8;
+      if (mainTextWidth <= 0) return;
 
-      const editorWidth = mainWrapper.clientWidth;
-      const mainFontSize = parseFloat(window.getComputedStyle(mainWrapper).fontSize) || 14;
-      const miniFontSize = parseFloat(window.getComputedStyle(miniWrapper).fontSize) || 3;
+      const mainCharWidth = editor.defaultCharWidth() || 9;
+      const miniCharWidth = minimap.defaultCharWidth() || 1.8;
 
-      const ratio = miniFontSize / mainFontSize;
-      const targetWidth = editorWidth * ratio;
+      const ratio = miniCharWidth / mainCharWidth;
+      const targetWidth = Math.ceil(mainTextWidth * ratio);
 
       minimap.setSize(targetWidth, "100%");
       minimap.refresh();
+      requestSliderUpdate();
     }
 
     setTimeout(syncMinimapWrap, 10);
 
+    let resizeRaf = null;
     const editorResizeObserver = new ResizeObserver(() => {
       if (minimapContainer.style.display !== "none") {
-        syncMinimapWrap();
+        if (resizeRaf) cancelAnimationFrame(resizeRaf);
+        resizeRaf = requestAnimationFrame(syncMinimapWrap);
       }
     });
     editorResizeObserver.observe(editor.getWrapperElement());
@@ -1550,6 +1681,7 @@
         minimapContainer.style.display = "block";
         minimapBtn.innerHTML = '<i class="fas fa-map"></i> Toggle Minimap';
         setTimeout(() => {
+          lastMinimapWidth = 0; // Reset cache when re-opening minimap
           editor.refresh();
           minimap.refresh();
           syncMinimapWrap();
@@ -1569,8 +1701,14 @@
     wrapBtn.addEventListener("click", () => {
       isWrapped = !isWrapped;
       editor.setOption("lineWrapping", isWrapped);
-      wrapBtn.innerHTML = isWrapped ? '<i class="fas fa-arrows-left-right-to-line"></i> Toggle Word Wrap' : '<i class="fa-solid fa-arrows-left-right"></i> Toggle Word Wrap';
-      minimap.setOption("lineWrapping", editor.getOption("lineWrapping"));
+      wrapBtn.innerHTML = isWrapped
+        ? '<i class="fas fa-arrows-left-right-to-line"></i> Toggle Word Wrap'
+        : '<i class="fa-solid fa-arrows-left-right"></i> Toggle Word Wrap';
+      minimap.setOption("lineWrapping", isWrapped);
+      setTimeout(() => {
+        syncMinimapWrap();
+        updateMinimapSlider();
+      }, 10);
     });
 
     // --- WHITESPACE TOGGLE LOGIC ---
@@ -1787,110 +1925,565 @@
         editor.performLint();
       }
     }
+    // Normalize existing files in LocalStorage to support folders & parentId
+    files = files.map(f => ({
+      ...f,
+      type: f.type || "file",
+      parentId: f.parentId !== undefined ? f.parentId : null,
+      isOpen: f.isOpen !== undefined ? f.isOpen : true
+    }));
+
+    // Map file extensions to colored FontAwesome icons
+    function getFileIconHTML(filename) {
+      const ext = filename.includes(".") ? filename.split(".").pop().toLowerCase() : "";
+      const iconMap = {
+        html: { icon: "fa-brands fa-html5", color: "#e34c26" },
+        htm:  { icon: "fa-brands fa-html5", color: "#e34c26" },
+        css:  { icon: "fa-brands fa-css3-alt", color: "#264de4" },
+        js:   { icon: "fa-brands fa-js", color: "#f7df1e" },
+        py:   { icon: "fa-brands fa-python", color: "#3776ab" },
+        java: { icon: "fa-brands fa-java", color: "#f89820" },
+        php:  { icon: "fa-brands fa-php", color: "#777bb4" },
+        sql:  { icon: "fas fa-database", color: "#00758f" },
+        c:    { icon: "fas fa-code", color: "#555599" },
+        cpp:  { icon: "fas fa-code", color: "#00599c" },
+        h:    { icon: "fas fa-code", color: "#a074c4" },
+        json: { icon: "fas fa-brackets-curly", color: "#fbc02d" },
+        md:   { icon: "fa-brands fa-markdown", color: "#42a5f5" },
+        txt:  { icon: "fas fa-file-lines", color: "#888888" }
+      };
+      const match = iconMap[ext] || { icon: "fas fa-file-code", color: "#409050" };
+      return `<i class="${match.icon}" style="color: ${match.color}; width: 16px; text-align: center;"></i>`;
+    }
+
+    // Download a single file
+    function downloadFile(fileObj) {
+      const content = (fileObj.id === activeFileId) ? editor.getValue() : fileObj.content;
+      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileObj.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`Downloaded "${fileObj.name}"`);
+    }
+
+    // Build full relative path (e.g., "src/utils/helper.py") for ZIP archive
+    function getFullPath(item) {
+      let parts = [item.name];
+      let current = item;
+      let safety = 0;
+      while (current.parentId !== null && safety < 50) {
+        const parent = files.find(f => f.id === current.parentId && f.type === "folder");
+        if (!parent) break;
+        parts.unshift(parent.name);
+        current = parent;
+        safety++;
+      }
+      return parts.join("/");
+    }
+
+    // Zip and Download All Files & Folders
+    async function downloadAllAsZip() {
+      storeInLocalMemory();
+      if (typeof JSZip === "undefined") {
+        showToast("JSZip library failed to load.");
+        return;
+      }
+
+      const zip = new JSZip();
+
+      files.forEach(item => {
+        const fullPath = getFullPath(item);
+        if (item.type === "folder") {
+          zip.folder(fullPath);
+        } else {
+          const content = (item.id === activeFileId) ? editor.getValue() : (item.content || "");
+          zip.file(fullPath, content);
+        }
+      });
+
+      try {
+        const blob = await zip.generateAsync({ type: "blob" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "workspace.zip";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast("Downloaded workspace.zip");
+      } catch (err) {
+        showToast("Error creating ZIP file.");
+      }
+    }
+
+    // Prevent dragging a folder inside itself or its own subfolders
+    function isDescendant(draggedId, targetFolderId) {
+      let current = files.find(f => f.id === targetFolderId);
+      let safety = 0;
+      while (current && current.parentId !== null && safety < 50) {
+        if (current.parentId === draggedId) return true;
+        current = files.find(f => f.id === current.parentId);
+        safety++;
+      }
+      return false;
+    }
+
+    // Get all descendant IDs of a folder (for recursive deletion)
+    function getDescendantIds(folderId) {
+      let ids = [];
+      const children = files.filter(f => f.parentId === folderId);
+      children.forEach(child => {
+        ids.push(child.id);
+        if (child.type === "folder") {
+          ids = ids.concat(getDescendantIds(child.id));
+        }
+      });
+      return ids;
+    }
+
+    // Close all open 3-dot menus
+    function closeAllFileMenus() {
+      document.querySelectorAll(".file-menu-dropdown.show").forEach(el => el.classList.remove("show"));
+      document.querySelectorAll(".file-menu-btn.active").forEach(el => el.classList.remove("active"));
+    }
+    document.addEventListener("click", closeAllFileMenus);
+
+    let draggedItemId = null;
+
+    // Allow dropping onto the empty #file-list area to move items out to the root level
+    const fileListEl = document.getElementById("file-list");
+    fileListEl.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      if (e.target === fileListEl) {
+        fileListEl.classList.add("drag-over-root");
+      }
+    });
+    fileListEl.addEventListener("dragleave", (e) => {
+      if (e.target === fileListEl) {
+        fileListEl.classList.remove("drag-over-root");
+      }
+    });
+    fileListEl.addEventListener("drop", (e) => {
+      e.preventDefault();
+      fileListEl.classList.remove("drag-over-root");
+      if (e.target !== fileListEl || draggedItemId === null) return;
+
+      const draggedItem = files.find(f => f.id === draggedItemId);
+      if (draggedItem && draggedItem.parentId !== null) {
+        draggedItem.parentId = null;
+        storeInLocalMemory();
+        renderFileList();
+        showToast(`Moved "${draggedItem.name}" to root`);
+      }
+      draggedItemId = null;
+    });
 
     function renderFileList() {
-      const list = document.getElementById("file-list");
-      list.innerHTML = "";
-      files.forEach(f => {
-        const item = document.createElement("div");
-        item.className = "file-item" + (f.id === activeFileId ? " active" : "");
+      fileListEl.innerHTML = "";
 
-        const nameSpan = document.createElement("span");
-        nameSpan.className = "file-name-span";
-        nameSpan.innerHTML = `<i class="fas fa-file-code" style="margin-right:6px;"></i>${f.name}`;
+      // Sort folders first, then alphabetically
+      function getSortedChildren(parentId) {
+        return files
+          .filter(f => (f.parentId ?? null) === parentId)
+          .sort((a, b) => {
+            if (a.type !== b.type) return a.type === "folder" ? -1 : 1;
+            return a.name.localeCompare(b.name);
+          });
+      }
 
-        const actions = document.createElement("div");
-        actions.className = "file-actions";
+      function renderTreeLevel(parentId, depth) {
+        const children = getSortedChildren(parentId);
 
-        const renameBtn = document.createElement("button");
-        renameBtn.className = "icon-btn";
-        renameBtn.title = "Rename";
-        renameBtn.innerHTML = '<i class="fas fa-pen"></i>';
-        renameBtn.onclick = (e) => {
-          e.stopPropagation();
-          const newName = prompt("Rename file:", f.name);
-          if (newName && newName.trim()) {
-            f.name = newName.trim();
-            if (f.id === activeFileId) {
-              document.getElementById("current-file-label").textContent = f.name;
-              setEditorLanguage(f.name);
+        children.forEach(f => {
+          const isFolder = f.type === "folder";
+          const item = document.createElement("div");
+          item.className = "file-item" + (!isFolder && f.id === activeFileId ? " active" : "");
+          item.style.paddingLeft = `${12 + depth * 16}px`;
+          item.draggable = true;
+
+          // --- DRAG AND DROP EVENTS ---
+          item.addEventListener("dragstart", (e) => {
+            draggedItemId = f.id;
+            item.classList.add("dragging");
+            e.dataTransfer.effectAllowed = "move";
+            e.dataTransfer.setData("text/plain", String(f.id));
+          });
+
+          item.addEventListener("dragend", () => {
+            draggedItemId = null;
+            item.classList.remove("dragging");
+            document.querySelectorAll(".file-item.drag-over").forEach(el => el.classList.remove("drag-over"));
+            fileListEl.classList.remove("drag-over-root");
+          });
+
+          item.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (draggedItemId === null || draggedItemId === f.id) return;
+            const targetFolderId = isFolder ? f.id : f.parentId;
+            if (targetFolderId !== null && (draggedItemId === targetFolderId || isDescendant(draggedItemId, targetFolderId))) {
+              return;
             }
+            item.classList.add("drag-over");
+          });
+
+          item.addEventListener("dragleave", (e) => {
+            e.stopPropagation();
+            item.classList.remove("drag-over");
+          });
+
+          item.addEventListener("drop", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            item.classList.remove("drag-over");
+            if (draggedItemId === null || draggedItemId === f.id) return;
+
+            const draggedItem = files.find(x => x.id === draggedItemId);
+            if (!draggedItem) return;
+
+            // Dropping on a folder puts it inside that folder; dropping on a file puts it in that file's parent folder
+            const newParentId = isFolder ? f.id : (f.parentId ?? null);
+
+            if (newParentId !== null && (draggedItem.id === newParentId || isDescendant(draggedItem.id, newParentId))) {
+              showToast("Cannot move a folder inside itself.");
+              return;
+            }
+
+            draggedItem.parentId = newParentId;
+            if (isFolder) f.isOpen = true;
             storeInLocalMemory();
             renderFileList();
-          }
-        };
+            showToast(newParentId ? `Moved "${draggedItem.name}" into "${f.name}"` : `Moved "${draggedItem.name}" to root`);
+            draggedItemId = null;
+          });
 
-        const delBtn = document.createElement("button");
-        delBtn.className = "icon-btn file-delete";
-        delBtn.title = "Delete";
-        delBtn.innerHTML = '<i class="fas fa-trash"></i>';
-        delBtn.onclick = (e) => {
-          e.stopPropagation();
-          if (files.length <= 1) {
-            showToast("Cannot delete the last remaining file.");
-            return;
-          }
-          files = files.filter(file => file.id !== f.id);
-          if (activeFileId === f.id) {
-            loadFile(files[0].id, true);
+          // --- ICON & LABEL ---
+          const nameSpan = document.createElement("span");
+          nameSpan.className = "file-name-span";
+          if (isFolder) {
+            const chevron = f.isOpen ? "fa-chevron-down" : "fa-chevron-right";
+            const folderIcon = f.isOpen ? "fa-folder-open" : "fa-folder";
+            nameSpan.innerHTML = `<i class="fas ${chevron} folder-chevron"></i> <i class="fas ${folderIcon}" style="color: #dcb67a; width: 16px; text-align: center;"></i> <span>${f.name}</span>`;
           } else {
-            storeInLocalMemory();
-            renderFileList();
+            nameSpan.innerHTML = `<span class="folder-chevron"></span> ${getFileIconHTML(f.name)} <span>${f.name}</span>`;
           }
-        };
 
-        actions.appendChild(renameBtn);
-        actions.appendChild(delBtn);
-        item.appendChild(nameSpan);
-        item.appendChild(actions);
-        item.onclick = () => {
-          if (f.id !== activeFileId) loadFile(f.id, false);
-        };
-        list.appendChild(item);
-      });
+          // --- 3-DOT CONTEXT MENU ---
+          const menuContainer = document.createElement("div");
+          menuContainer.className = "file-menu-container";
+
+          const menuBtn = document.createElement("button");
+          menuBtn.className = "file-menu-btn";
+          menuBtn.title = "Options";
+          menuBtn.innerHTML = '<i class="fas fa-ellipsis-vertical"></i>';
+
+          const dropdown = document.createElement("div");
+          dropdown.className = "file-menu-dropdown";
+
+          menuBtn.onclick = (e) => {
+            e.stopPropagation();
+            const isAlreadyOpen = dropdown.classList.contains("show");
+            closeAllFileMenus();
+            if (!isAlreadyOpen) {
+              dropdown.classList.add("show");
+              menuBtn.classList.add("active");
+            }
+          };
+
+          // Folder-Specific: New File Inside & New Folder Inside
+          if (isFolder) {
+            const newFileInFolderOpt = document.createElement("button");
+            newFileInFolderOpt.className = "file-menu-item";
+            newFileInFolderOpt.innerHTML = '<i class="fas fa-file-circle-plus"></i> New File Here';
+            newFileInFolderOpt.onclick = (e) => {
+              e.stopPropagation();
+              closeAllFileMenus();
+              createNewFile(f.id);
+            };
+            dropdown.appendChild(newFileInFolderOpt);
+
+            const newSubfolderOpt = document.createElement("button");
+            newSubfolderOpt.className = "file-menu-item";
+            newSubfolderOpt.innerHTML = '<i class="fas fa-folder-plus"></i> New Folder Here';
+            newSubfolderOpt.onclick = (e) => {
+              e.stopPropagation();
+              closeAllFileMenus();
+              createNewFolder(f.id);
+            };
+            dropdown.appendChild(newSubfolderOpt);
+          }
+
+          // Rename Option
+          const renameOpt = document.createElement("button");
+          renameOpt.className = "file-menu-item";
+          renameOpt.innerHTML = '<i class="fas fa-pen"></i> Rename';
+          renameOpt.onclick = (e) => {
+            e.stopPropagation();
+            closeAllFileMenus();
+            const newName = prompt(`Rename ${isFolder ? "folder" : "file"}:`, f.name);
+            if (newName && newName.trim()) {
+              f.name = newName.trim();
+              if (!isFolder && f.id === activeFileId) {
+                document.getElementById("current-file-label").textContent = f.name;
+                setEditorLanguage(f.name);
+              }
+              storeInLocalMemory();
+              renderFileList();
+              showToast(`Renamed to "${f.name}"`);
+            }
+          };
+          dropdown.appendChild(renameOpt);
+
+          // Download Option (For individual files)
+          if (!isFolder) {
+            const downloadOpt = document.createElement("button");
+            downloadOpt.className = "file-menu-item";
+            downloadOpt.innerHTML = '<i class="fas fa-download"></i> Download';
+            downloadOpt.onclick = (e) => {
+              e.stopPropagation();
+              closeAllFileMenus();
+              downloadFile(f);
+            };
+            dropdown.appendChild(downloadOpt);
+          }
+
+          // Delete Option (with Confirmation Box)
+          const deleteOpt = document.createElement("button");
+          deleteOpt.className = "file-menu-item delete-opt";
+          deleteOpt.innerHTML = '<i class="fas fa-trash"></i> Delete';
+          deleteOpt.onclick = (e) => {
+            e.stopPropagation();
+            closeAllFileMenus();
+
+            const idsToRemove = isFolder ? [f.id, ...getDescendantIds(f.id)] : [f.id];
+            const remainingFiles = files.filter(item => item.type !== "folder" && !idsToRemove.includes(item.id));
+
+            if (remainingFiles.length === 0) {
+              showToast("Cannot delete: At least one file must remain in the workspace.");
+              return;
+            }
+
+            const confirmMsg = isFolder
+              ? `Are you sure you want to delete the folder "${f.name}" and all its contents?`
+              : `Are you sure you want to delete "${f.name}"?`;
+
+            if (!confirm(confirmMsg)) return;
+
+            files = files.filter(item => !idsToRemove.includes(item.id));
+            idsToRemove.forEach(remId => fileSessions.delete(remId));
+            showToast(`Deleted "${f.name}"`);
+
+            if (idsToRemove.includes(activeFileId)) {
+              loadFile(remainingFiles[0].id, true);
+            } else {
+              storeInLocalMemory();
+              renderFileList();
+            }
+          };
+          dropdown.appendChild(deleteOpt);
+
+          menuContainer.appendChild(menuBtn);
+          menuContainer.appendChild(dropdown);
+
+          item.appendChild(nameSpan);
+          item.appendChild(menuContainer);
+
+          // Click behavior: Toggle folder open/close OR load file
+          item.onclick = () => {
+            if (isFolder) {
+              f.isOpen = !f.isOpen;
+              storeInLocalMemory();
+              renderFileList();
+            } else if (f.id !== activeFileId) {
+              loadFile(f.id, false);
+            }
+          };
+
+          fileListEl.appendChild(item);
+
+          // Recursively render children if folder is open
+          if (isFolder && f.isOpen) {
+            renderTreeLevel(f.id, depth + 1);
+          }
+        });
+      }
+
+      renderTreeLevel(null, 0);
+    }
+
+        // Save the current file's live state into its background session before switching away
+    function saveCurrentSessionState() {
+      if (!activeFileId || !fileSessions.has(activeFileId)) return;
+      const currentSession = fileSessions.get(activeFileId);
+
+      currentSession.baselineText = baselineText;
+      currentSession.indentConfig = { ...indentConfig };
+      currentSession.bookmarkedLines = new Set(bookmarkedLines);
+      currentSession.searchState = {
+        isOpen: searchBox.style.display === "flex",
+        query: searchInput.value,
+        replaceText: document.getElementById("replace-input").value,
+        matchCase: matchCaseCb.checked,
+        statsText: searchStats.textContent
+      };
+    }
+
+    // Retrieve or create a persistent background session for a file
+    function getOrCreateSession(fileObj) {
+      if (fileSessions.has(fileObj.id)) {
+        return fileSessions.get(fileObj.id);
+      }
+
+      const detectedIndent = detectIndent(fileObj.content || "");
+      const doc = new CodeMirror.Doc(fileObj.content || "", "null");
+      const miniDoc = doc.linkedDoc({ sharedHist: false });
+
+      const newSession = {
+        doc: doc,
+        miniDoc: miniDoc,
+        baselineText: fileObj.content || "",
+        indentConfig: detectedIndent,
+        bookmarkedLines: new Set(),
+        isFirstLoad: true,
+        searchState: {
+          isOpen: false,
+          query: "",
+          replaceText: "",
+          matchCase: false,
+          statsText: "0/0"
+        }
+      };
+
+      fileSessions.set(fileObj.id, newSession);
+      return newSession;
     }
 
     function loadFile(id, skipSave = false) {
+      // 1. Save outgoing file's session state (search, bookmarks, baseline, indent)
+      saveCurrentSessionState();
       if (!skipSave) storeInLocalMemory();
-      const target = files.find(f => f.id === id) || files[0];
+
+      const target = files.find(f => f.id === id && f.type !== "folder") || files.find(f => f.type !== "folder");
+      if (!target) return;
       activeFileId = target.id;
 
-      document.getElementById("current-file-label").textContent = target.name;
-      baselineText = target.content;
-      editor.setValue(target.content);
-      editor.clearHistory();
-      bookmarkedLines.clear();
-      updateBookmarkScrollbar();
+      // 2. Get or create the target file's persistent background session
+      const session = getOrCreateSession(target);
 
-      indentConfig = detectIndent(target.content);
+      // 3. Swap CodeMirror documents (preserves Undo/Redo, Selection, Scroll, Folds, and Marks!)
+      if (editor.getDoc() !== session.doc) {
+        editor.swapDoc(session.doc);
+        minimap.swapDoc(session.miniDoc);
+      }
+
+      // 4. Restore file label & language mode
+      document.getElementById("current-file-label").textContent = target.name;
+      setEditorLanguage(target.name);
+
+      // 5. Restore per-file baseline & diff gutter
+      baselineText = session.baselineText;
+      updateDiffMarkers(session.doc.getValue());
+
+      // 6. Restore per-file indentation settings
+      indentConfig = { ...session.indentConfig };
       indentInput.value = indentConfig.useTabs ? "tab" : indentConfig.size;
       editor.setOption("indentUnit", indentConfig.size);
       editor.setOption("tabSize", indentConfig.size);
       editor.setOption("indentWithTabs", indentConfig.useTabs);
 
+      // 7. Restore per-file bookmarks & scrollbar markers
+      bookmarkedLines.clear();
+      session.bookmarkedLines.forEach(handle => bookmarkedLines.add(handle));
+      updateBookmarkScrollbar();
+
+      // 8. Re-apply whitespace overlay if active
       if (isWhitespaceVisible) {
         editor.removeOverlay(whitespaceOverlay);
         editor.addOverlay(whitespaceOverlay);
       }
 
-      setEditorLanguage(target.name);
-      updateDiffMarkers(target.content);
+      // 9. Restore per-file Search & Replace state
+      if (searchScrollbarMarks) {
+        searchScrollbarMarks.clear();
+        searchScrollbarMarks = null;
+      }
+      const sState = session.searchState;
+      searchInput.value = sState.query;
+      document.getElementById("replace-input").value = sState.replaceText;
+      matchCaseCb.checked = sState.matchCase;
+
+      if (sState.isOpen) {
+        searchBox.style.display = "flex";
+        if (sState.query) {
+          // Re-build search matches & scrollbar ticks without moving the user's current selection
+          const savedSelections = session.doc.listSelections();
+          const savedScroll = editor.getScrollInfo();
+          highlightAllMatches(sState.query, !sState.matchCase);
+          session.doc.setSelections(savedSelections);
+          editor.scrollTo(savedScroll.left, savedScroll.top);
+          searchStats.textContent = sState.statsText || `0/${allMatches.length}`;
+          if (sState.query.length >= 2) {
+            searchScrollbarMarks = editor.showMatchesOnScrollbar(
+              sState.query,
+              !sState.matchCase,
+              { className: "search-box-scrollbar-mark" }
+            );
+          }
+        } else {
+          searchStats.textContent = "0/0";
+        }
+      } else {
+        searchBox.style.display = "none";
+      }
+
+      session.isFirstLoad = false;
       renderFileList();
       storeInLocalMemory();
+
       setTimeout(() => {
+        editor.focus();
         syncMinimapWrap();
         updateMinimapSlider();
-      }, 50);
+      }, 20);
     }
 
-    document.getElementById("new-file-btn").addEventListener("click", () => {
+    function createNewFile(parentId = null) {
       const name = prompt("Enter file name (e.g., app.js, main.cpp, Main.java, index.php):", "untitled.py");
       if (name && name.trim()) {
-        const newFile = { id: Date.now(), name: name.trim(), content: "" };
+        if (parentId !== null) {
+          const parentFolder = files.find(f => f.id === parentId);
+          if (parentFolder) parentFolder.isOpen = true;
+        }
+        const newFile = { id: Date.now(), name: name.trim(), type: "file", parentId: parentId, content: "" };
         files.push(newFile);
         loadFile(newFile.id, false);
       }
-    });
+    }
+
+    function createNewFolder(parentId = null) {
+      const name = prompt("Enter folder name:", "src");
+      if (name && name.trim()) {
+        if (parentId !== null) {
+          const parentFolder = files.find(f => f.id === parentId);
+          if (parentFolder) parentFolder.isOpen = true;
+        }
+        const newFolder = { id: Date.now(), name: name.trim(), type: "folder", parentId: parentId, isOpen: true };
+        files.push(newFolder);
+        storeInLocalMemory();
+        renderFileList();
+        showToast(`Created folder "${newFolder.name}"`);
+      }
+    }
+
+    document.getElementById("new-file-btn").addEventListener("click", () => createNewFile(null));
+    document.getElementById("new-folder-btn").addEventListener("click", () => createNewFolder(null));
+    document.getElementById("download-all-btn").addEventListener("click", downloadAllAsZip);
 
     // --- WHILE TYPING ---
     let editorOnChangeTimeout = null;
